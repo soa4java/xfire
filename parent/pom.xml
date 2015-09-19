@@ -1,0 +1,1906 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.jivesoftware.openfire</groupId>
+	<artifactId>xfire-parent</artifactId>
+	<name>parent</name>
+	<version>3.10.3-SNAPSHOT</version>
+
+	<packaging>pom</packaging>
+
+	<properties>
+		<im.server.version>3.10.3</im.server.version>
+		<java.version>1.7</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- jetty -->
+		<jetty.version>9.1.5.v20140505</jetty.version> <!--9.2.9.v20150224 -->
+
+		<!-- Spring -->
+		<spring-framework.version>3.2.3.RELEASE</spring-framework.version>
+
+		<maven.checkstyle.version>2.9.1</maven.checkstyle.version>
+		<findbugs.maven.version>2.5</findbugs.maven.version>
+		<maven.surefire.report.version>2.12</maven.surefire.report.version>
+		<maven.jxr.version>2.3</maven.jxr.version>
+		<maven.site.version>3.1</maven.site.version>
+		<dashboard.maven.version>1.0.0-beta-1</dashboard.maven.version>
+		<maven.javadoc.version>2.8.1</maven.javadoc.version>
+		<maven.install.version>2.3.1</maven.install.version>
+		<maven.source.plugin.vsersion>2.2</maven.source.plugin.vsersion>
+		<maven.surefire.common.version>2.12</maven.surefire.common.version>
+	</properties>
+
+	<description>定义了所有的lib</description>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sitong-snapshot</id>
+			<name>sitong-snapshot</name>
+			<url>http://192.168.60.102:8081/nexus/content/repositories/sitong-snapshot/
+            </url>
+		</snapshotRepository>
+		<repository>
+			<id>sitong-release</id>
+			<name>sitong-release</name>
+			<url>http://192.168.60.102:8081/nexus/content/repositories/sitong/
+            </url>
+		</repository>
+	</distributionManagement>
+
+	<modules>
+
+
+		<!-- <module>/im.tool</module> <module>/im.server</module> <module>/api</module> 
+			<module>/sdk</module> -->
+
+	</modules>
+
+	<profiles>
+		<!-- 开发环境，默认激活 -->
+		<profile>
+			<id>dev</id>
+			<properties>
+				<env>dev</env>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+
+		<!-- 测试环境 -->
+		<profile>
+			<id>test</id>
+			<properties>
+				<env>test</env>
+			</properties>
+		</profile>
+
+		<!-- beta环境 -->
+		<profile>
+			<id>beta</id>
+			<properties>
+				<env>beta</env>
+			</properties>
+		</profile>
+
+		<!-- 生产环境 -->
+		<profile>
+			<id>production</id>
+			<properties>
+				<env>production</env>
+			</properties>
+		</profile>
+	</profiles>
+	<scm>
+		<developerConnection>yanricheng@163.com</developerConnection>
+		<url>https://github.com/igniterealtime/Openfire.git</url>
+	</scm>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven.source.plugin.vsersion}</version>
+				<configuration>
+					<attach>true</attach>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/java</source>
+								<source>src/main/jspj</source>
+								<source>src/main/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${basedir}/target/app/classes</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${maven.source.plugin.vsersion}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId> maven-install-plugin</artifactId>
+					<version>${maven.install.version}</version>
+				</plugin>
+
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>${maven.checkstyle.version}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>findbugs-maven-plugin</artifactId>
+					<version>${findbugs.maven.version}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-report-plugin</artifactId>
+					<version>${maven.surefire.report.version}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven.site.version}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jxr-plugin</artifactId>
+					<version>${maven.jxr.version}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${maven.javadoc.version}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>dashboard-maven-plugin</artifactId>
+					<version>${dashboard.maven.version}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.9</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.5</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.3.2</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<testFailureIgnore>true</testFailureIgnore>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>2.4.1</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.3</version>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven.checkstyle.version}</version>
+				<configuration>
+					<configLocation>http://192.168.70.51:8080/check_style_jdls.xml
+					</configLocation>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>${findbugs.maven.version}</version>
+				<configuration>
+					<xmlOutput>true</xmlOutput>
+					<threshold>High</threshold>
+					<effort>Default</effort>
+					<findbugsXmlOutput>true</findbugsXmlOutput>
+					<findbugsXmlOutputDirectory>target/site
+					</findbugsXmlOutputDirectory>
+					<!-- Optional directory to put findbugs xdoc xml report -->
+					<xmlOutputDirectory>target/site</xmlOutputDirectory>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>${maven.surefire.report.version}</version>
+				<configuration>
+					<outputDirectory>${basedir}/target/newsite</outputDirectory>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>${maven.site.version}</version>
+				<configuration>
+					<outputDirectory>${basedir}/target/newsite</outputDirectory>
+					<outputEncoding>UTF-8</outputEncoding>
+					<port>9000</port>
+					<tempWebappDirectory>${basedir}/target/site/tempdir
+					</tempWebappDirectory>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>${maven.jxr.version}</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<linkJavadoc>true</linkJavadoc>
+					<javadocDir>${basedir}/target/javadocs</javadocDir>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.javadoc.version}</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>dashboard-maven-plugin</artifactId>
+				<version>${dashboard.maven.version}</version>
+			</plugin>
+
+		</plugins>
+	</reporting>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>1.6.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ant-contrib</groupId>
+				<artifactId>ant-contrib</artifactId>
+				<version>1.0b3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.com.servyou.openfire</groupId>
+				<artifactId>ant-jive-edition</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib</artifactId>
+				<version>2.1_3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.6</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>1.0.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging-api</artifactId>
+				<version>1.0.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-el</groupId>
+				<artifactId>commons-el</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-httpclient</groupId>
+				<artifactId>commons-httpclient</artifactId>
+				<version>3.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>1.9</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-core-asl</artifactId>
+				<version>1.9.13</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-mapper-asl</artifactId>
+				<version>1.9.13</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-jaxrs</artifactId>
+				<version>1.9.13</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>dom4j</groupId>
+				<artifactId>dom4j</artifactId>
+				<version>1.6.1</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>com.googlecode.concurrentlinkedhashmap</groupId>
+				<artifactId>concurrentlinkedhashmap-lru</artifactId>
+				<version>1.0_jdk5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.com.servyou.openfire</groupId>
+				<artifactId>dbutil-jive</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
+				<version>1.3</version>
+			</dependency>
+
+
+
+			<dependency>
+				<groupId>hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>1.8.0.10</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-continuation</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-http</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-io</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-security</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlet</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlets</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-util</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-websocket</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-xml</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-jmx</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.spdy</groupId>
+				<artifactId>spdy-client</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.spdy</groupId>
+				<artifactId>spdy-core</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>sitong.thinker</groupId>
+				<artifactId>spdy-http</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.spdy</groupId>
+				<artifactId>spdy-http-common</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.spdy</groupId>
+				<artifactId>spdy-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-api</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-client</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-common</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-servlet</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-client-impl</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-server-impl</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax.websocket-api</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>jaxen</groupId>
+				<artifactId>jaxen</artifactId>
+				<version>1.1-beta-4</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xom</groupId>
+						<artifactId>xom</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xmlParserAPIs</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.com.servyou.openfire</groupId>
+				<artifactId>jdic</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>jdom</groupId>
+				<artifactId>jdom</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>jmdns</groupId>
+				<artifactId>jmdns</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jmock</groupId>
+				<artifactId>jmock</artifactId>
+				<version>2.6.0-RC2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jmock</groupId>
+				<artifactId>jmock-junit4</artifactId>
+				<version>2.6.0-RC2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jmock</groupId>
+				<artifactId>jmock-legacy</artifactId>
+				<version>2.6.0-RC2</version>
+			</dependency>
+
+			<!-- <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>jsp-api-2.0</artifactId> 
+				<version>6.0.1</version> </dependency> -->
+
+			<dependency>
+				<groupId>net.sourceforge.jtds</groupId>
+				<artifactId>jtds</artifactId>
+				<version>1.2.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.11</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.jcraft</groupId>
+				<artifactId>jzlib</artifactId>
+				<version>1.0.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.gnu.inet</groupId>
+				<artifactId>libidn</artifactId>
+				<version>1.15</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.mail</groupId>
+				<artifactId>mail</artifactId>
+				<version>1.4.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.mina</groupId>
+				<artifactId>mina-core</artifactId>
+				<type>jar</type>
+				<version>2.0.9</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpmime</artifactId>
+				<version>4.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>4.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>fluent-hc</artifactId>
+				<version>4.3</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>org.apache.mina</groupId>
+				<artifactId>mina-filter-compression</artifactId>
+				<version>2.0.9</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.mina</groupId>
+						<artifactId>mina-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.mina</groupId>
+				<artifactId>mina-integration-beans</artifactId>
+				<version>2.0.9</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.mina</groupId>
+						<artifactId>mina-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.mina</groupId>
+				<artifactId>mina-integration-jmx</artifactId>
+				<version>2.0.9</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.mina</groupId>
+						<artifactId>mina-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.mina</groupId>
+						<artifactId>mina-integration-beans</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.mina</groupId>
+						<artifactId>mina-integration-ognl</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.mina</groupId>
+				<artifactId>mina-integration-ognl</artifactId>
+				<type>jar</type>
+				<version>2.0.9</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.mina</groupId>
+						<artifactId>mina-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.mina</groupId>
+						<artifactId>mina-integration-beans</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>ognl</groupId>
+				<artifactId>ognl</artifactId>
+				<version>3.0.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.34</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.objenesis</groupId>
+				<artifactId>objenesis</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>rome</groupId>
+				<artifactId>rome</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>rome</groupId>
+				<artifactId>rome-fetcher</artifactId>
+				<version>1.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<!-- === jetty 9 依赖的jsp === -->
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.el</artifactId>
+				<version>3.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.web</groupId>
+				<artifactId>javax.servlet.jsp.jstl</artifactId>
+				<version>1.2.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.web</groupId>
+				<artifactId>javax.servlet.jsp</artifactId>
+				<version>2.3.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.servlet.jsp</groupId>
+				<artifactId>javax.servlet.jsp-api</artifactId>
+				<version>2.3.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty.toolchain</groupId>
+				<artifactId>jetty-jsp-jdt</artifactId>
+				<version>2.3.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>sitong.thinker</groupId>
+				<artifactId>org.eclipse.jdt.core</artifactId>
+				<version>3.8.2.v20130121</version>
+			</dependency>
+
+			<dependency>
+				<groupId>sitong.thinker</groupId>
+				<artifactId>org.eclipse.jetty.orbit.javax.servlet.jsp.jstl</artifactId>
+				<version>1.2.0.v201105211821</version>
+			</dependency>
+
+			<!-- ====================== -->
+
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>opensymphony</groupId>
+				<artifactId>sitemesh</artifactId>
+				<version>2.4.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.cloudhopper.proxool</groupId>
+				<artifactId>proxool</artifactId>
+				<version>0.9.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.17</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.7.7</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>ch.qos.cal10n</groupId>
+				<artifactId>cal10n-api</artifactId>
+				<version>0.7.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>taglibs</groupId>
+				<artifactId>standard</artifactId>
+				<version>1.1.2</version>
+			</dependency>
+
+			<!-- <dependency> <groupId>org.igniterealtime</groupId> <artifactId>tinder-sitong</artifactId> 
+				<version>1.3.0-20140418</version> </dependency> -->
+			<dependency>
+				<groupId>org.igniterealtime</groupId>
+				<artifactId>tinder</artifactId>
+				<version>1.3.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>xpp3</groupId>
+				<artifactId>xpp3</artifactId>
+				<version>1.1.4c</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.servyou.sitong</groupId>
+				<artifactId>ojdbc</artifactId>
+				<version>15</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.com.servyou.openfire</groupId>
+				<artifactId>i4jruntime</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>qdox</groupId>
+				<artifactId>qdox</artifactId>
+				<version>1.6.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.com.servyou.openfire</groupId>
+				<artifactId>shaj</artifactId>
+				<version>0.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.8.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sf.ezmorph</groupId>
+				<artifactId>ezmorph</artifactId>
+				<version>1.0.6</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sf.morph</groupId>
+				<artifactId>morph</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.geronimo.specs</groupId>
+				<artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+				<version>1.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.geronimo.specs</groupId>
+				<artifactId>geronimo-jms_1.1_spec</artifactId>
+				<version>1.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.geronimo.specs</groupId>
+				<artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+				<version>1.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.2.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>14.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpg-jdk15on</artifactId>
+				<version>1.50</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk15on</artifactId>
+				<version>1.50</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>1.50</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>aopalliance	</groupId>
+				<artifactId>aopalliance</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>antlr</groupId>
+				<artifactId>antlr</artifactId>
+				<version>2.7.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-tx</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-oxm</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.castor</groupId>
+				<artifactId>castor-core</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.castor</groupId>
+				<artifactId>castor-xml</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>dubbo</artifactId>
+				<version>2.5.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>3.4.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.101tec</groupId>
+				<artifactId>zkclient</artifactId>
+				<version>0.4</version>
+			</dependency>
+
+			<!-- Test Artifacts -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring-framework.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>sitong.thinker</groupId>
+				<artifactId>sitong-common</artifactId>
+				<version>1.2.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.15.0-GA</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>1.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz</artifactId>
+				<version>2.2.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz-jobs</artifactId>
+				<version>2.2.1</version>
+			</dependency>
+
+			<!-- <dependency> <groupId>javax.servlet</groupId> <artifactId>javax.servlet-api</artifactId> 
+				<version>3.1.0</version> </dependency> -->
+
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-mongodb</artifactId>
+				<version>1.5.4.RELEASE</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.mongodb</groupId>
+						<artifactId>mongo-java-driver</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongo-java-driver</artifactId>
+				<version>2.12.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-redis</artifactId>
+				<version>1.3.4.RELEASE</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-context-support</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>2.6.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-pool2</artifactId>
+				<version>2.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ant-contrib</groupId>
+			<artifactId>ant-contrib</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-el</groupId>
+			<artifactId>commons-el</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
+			</dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpmime</artifactId> 
+			</dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpcore</artifactId> 
+			</dependency> -->
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.concurrentlinkedhashmap</groupId>
+			<artifactId>concurrentlinkedhashmap-lru</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.com.servyou.openfire</groupId>
+			<artifactId>dbutil-jive</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-continuation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-http</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-io</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlets</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-websocket</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-xml</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jmx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>sitong.thinker</groupId>
+			<artifactId>spdy-http</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-http-common</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.com.servyou.openfire</groupId>
+			<artifactId>jdic</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>jmdns</groupId>
+			<artifactId>jmdns</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>jsp-api-2.0</artifactId> 
+			<version>6.0.1</version> </dependency> -->
+
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jzlib</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.gnu.inet</groupId>
+			<artifactId>libidn</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-filter-compression</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-integration-beans</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-integration-jmx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-integration-ognl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ognl</groupId>
+			<artifactId>ognl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.objenesis</groupId>
+			<artifactId>objenesis</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome-fetcher</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>servlet-api-2.5</artifactId> 
+			</dependency> -->
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>sitemesh</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cloudhopper.proxool</groupId>
+			<artifactId>proxool</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>ch.qos.cal10n</groupId>
+			<artifactId>cal10n-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>taglibs</groupId>
+			<artifactId>standard</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.igniterealtime</groupId>
+			<artifactId>tinder</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>xpp3</groupId>
+			<artifactId>xpp3</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.servyou.sitong</groupId>
+			<artifactId>ojdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.com.servyou.openfire</groupId>
+			<artifactId>i4jruntime</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>qdox</groupId>
+			<artifactId>qdox</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.com.servyou.openfire</groupId>
+			<artifactId>shaj</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.morph</groupId>
+			<artifactId>morph</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jms_1.1_spec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpg-jdk15on</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>aopalliance	</groupId>
+			<artifactId>aopalliance</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.castor</groupId>
+			<artifactId>castor-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.castor</groupId>
+			<artifactId>castor-xml</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+		</dependency>
+
+		<!-- jetty9 jsp -->
+
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>javax.servlet.jsp.jstl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>javax.servlet.jsp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.toolchain</groupId>
+			<artifactId>jetty-jsp-jdt</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>sitong.thinker</groupId>
+			<artifactId>org.eclipse.jdt.core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>sitong.thinker</groupId>
+			<artifactId>org.eclipse.jetty.orbit.javax.servlet.jsp.jstl</artifactId>
+		</dependency>
+
+
+		<!-- Test Artifacts -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.netty</groupId>
+			<artifactId>netty</artifactId>
+			<version>3.2.2.Final</version>
+		</dependency>
+
+
+		<!--jersey -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet-core</artifactId>
+			<version>2.0</version>
+		</dependency>
+
+		<!--JAXB API -->
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
+			<version>2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>sitong.thinker</groupId>
+			<artifactId>sitong-common</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-jobs</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

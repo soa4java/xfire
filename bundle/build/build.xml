@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<!--
+    $RCSfile: build.xml,v $
+    $Revision: 12844 $
+    $Date: 2011-10-01 09:29:40 -0500 (Sat, 01 Oct 2011) $
+
+    This software is published under the terms of the Apache License, Version 2.0,
+    a copy of which is included in this distribution.
+-->
+
+<!--
+    Build Requirements:
+
+        * Ant 1.6 or 1.7 (including optional tasks)
+        * JDK 1.5 or higher
+        * jUnit in your Ant or Java classpath
+-->
+<!--
+<project name="Openfire XMPP Server" default="openfire" basedir="..">
+-->
+<project name="Openfire XMPP Server" basedir="..">
+
+	<property name="lib.ant.dir" value="${basedir}/build/lib/ant" />
+
+
+
+	<path id="ant.dependencies">
+		<fileset dir="${lib.ant.dir}" includes="*.jar" />
+	</path>
+
+	<!-- ======================================================================================= -->
+	<!-- GLOBAL TASKDEFs                                                                         -->
+	<!-- ======================================================================================= -->
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath refid="ant.dependencies" />
+	</taskdef>
+	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+		<classpath refid="ant.dependencies" />
+	</taskdef>
+	<taskdef name="pack200" classname="com.sun.tools.apache.ant.pack200.Pack200Task">
+		<classpath refid="ant.dependencies" />
+	</taskdef>
+	<taskdef name="unpack200" classname="com.sun.tools.apache.ant.pack200.Unpack200Task">
+		<classpath refid="ant.dependencies" />
+	</taskdef>
+	<typedef name="srcinc" classname="com.jivesoftware.tools.selector.IncludeSourceSelector">
+		<classpath refid="ant.dependencies" />
+	</typedef>
+
+	<!-- 打包openfire应用 -->
+	<target name="tar-openfire">
+		<echo>打包openfire应用</echo>
+		<if>
+			<available file="${basedir}/target/openfire.tar.gz" type="file" />
+			<then>
+				<delete file="${basedir}/target/openfire.tar.gz" />
+				<echo>成功删除 ${basedir}/target/openfire.tar.gz</echo>
+			</then>
+		</if>
+
+		<if>
+			<available file="${basedir}/target/openfire" type="dir" />
+			<then>
+				<tar destfile="${basedir}/target/openfire.tar.gz" basedir="${basedir}/target/openfire" compression="gzip" excludes=".git, .gitignore, *.ipr, *.iws, *.iml">
+				</tar>
+				<echo>成功打包 ${basedir}/target/openfire.tar.gz</echo>
+			</then>
+		</if>
+	</target>
+
+
+</project>

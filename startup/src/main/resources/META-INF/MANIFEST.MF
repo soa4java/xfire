@@ -1,0 +1,2 @@
+Main-Class: org.jivesoftware.openfire.starter.ServerStarter
+Built-By: servyou (www.servyou.com.cn)

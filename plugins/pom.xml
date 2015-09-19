@@ -1,0 +1,118 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- <parent> <groupId>sitong.thinker.imserver</groupId> <artifactId>imserver-parent</artifactId> 
+		<version>3.9.4-SNAPSHOT</version> <relativePath>../parent</relativePath> 
+		</parent> -->
+	<groupId>org.jivesoftware.openfire</groupId>
+	<artifactId>xfire-plugin-all</artifactId>
+	<name>plugin-all</name>
+	<version>3.9.4</version>
+	<packaging>pom</packaging>
+
+	<modules>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>sitong.thinker.imserver</groupId>
+			<artifactId>imserver-parent</artifactId>
+			<version>3.9.4-SNAPSHOT</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.reucon.maven.plugins</groupId>
+					<artifactId>maven-openfire-plugin</artifactId>
+					<version>1.0.2-SNAPSHOT</version>
+					<executions>
+						<execution>
+							<id>jspc</id>
+							<phase>package</phase><!-- process-classes -->
+							<goals>
+								<goal>jspc</goal>
+								<goal>openfire-plugin</goal>
+							</goals>
+							<configuration>
+								<useProvidedScope>true</useProvidedScope>
+								<classesDirectory><!-- ${jspc.work.dir}/lib -->
+									${project.build.outputDirectory}
+								</classesDirectory>
+								<webAppSourceDirectory>
+									${basedir}/src/main/webapp
+								</webAppSourceDirectory>
+								<generatedClasses>
+									${project.build.outputDirectory}
+								</generatedClasses>
+								<japcJavaDirectory>${basedir}/src/main/jspj</japcJavaDirectory>
+								<keepSources>true</keepSources>
+								<packageRoot>sitong.thinker.of.plugin.auth.jsp</packageRoot>
+								<verbose>true</verbose>
+								<webXml>${basedir}/src/main/webapp/WEB-INF/web.xml</webXml>
+								<mergeFragment>true</mergeFragment>
+								<webXmlFragment>${project.build.outputDirectory}/webfrag.xml
+								</webXmlFragment>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						
+					</configuration>
+				</plugin>
+
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.reucon.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-openfire-plugin
+										</artifactId>
+										<versionRange>
+											[1.0.2-SNAPSHOT,)
+										</versionRange>
+										<goals>
+											<goal>jspc</goal>
+											<goal>openfire-plugin</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>

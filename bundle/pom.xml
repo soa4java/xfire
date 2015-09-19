@@ -1,0 +1,357 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jivesoftware.openfire</groupId>
+		<artifactId>xfire-parent</artifactId>
+		<version>3.10.3-SNAPSHOT</version>
+		<relativePath>../parent</relativePath>
+	</parent>
+
+	<groupId>org.jivesoftware.openfire</groupId>
+	<artifactId>xfire-bundle</artifactId>
+	<name>bundle</name>
+	<version>3.10.3</version>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<admin.plugin.jar.name>admin-jsp</admin.plugin.jar.name>
+		<openfire.jar>openfire</openfire.jar>
+		<megered.web.xml.dir>${basedir}/target</megered.web.xml.dir>
+		<lib.dependencies>${basedir}/target/dependencies</lib.dependencies>
+		<admin.plugin.jsp>org.jivesoftware.openfire.admin</admin.plugin.jsp>
+		<jspc.work.dir>${basedir}/target/work</jspc.work.dir>
+		<jspc.dir>${jspc.work.dir}/jspc</jspc.dir>
+		<jspc.classes.dir>${jspc.work.dir}/classes</jspc.classes.dir>
+		<jspc.java.dir>${basedir}/src/main/jspj</jspc.java.dir>
+		<jspc.mixed.dir>${jspc.work.dir}/jspc/mixed</jspc.mixed.dir>
+		<openfire.dir>${basedir}/target/openfire</openfire.dir>
+	</properties>
+
+	<build>
+
+		<filters>
+			<filter>src/main/filters/filter-${env}.properties</filter>
+		</filters>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${basedir}/work</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/target</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/src/main/jspj</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+
+		<profile>
+			<id>copy-dependencies</id>
+			<activation>
+				<property>
+					<name>copy-dependencies</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.5</version>
+						<executions>
+							<execution>
+								<id>copy-dependencies</id>
+								<phase>process-sources</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${lib.dependencies}</outputDirectory>
+									<includeScope>runtime</includeScope>
+									<overWriteReleases>false</overWriteReleases>
+									<overWriteSnapshots>ture</overWriteSnapshots>
+									<overWriteIfNewer>true</overWriteIfNewer>
+									<excludeTransitive>true</excludeTransitive>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- 编译jsp -->
+		<profile>
+			<id>admin-jspc</id>
+			<activation>
+				<property>
+					<name>admin-jspc</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<!-- <groupId>org.mortbay.jetty</groupId> <artifactId>maven-jetty-jspc-plugin</artifactId> 
+							<version>6.1.26</version> -->
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-jspc-maven-plugin</artifactId>
+						<version>9.0.2.v20130417</version>
+						<executions>
+							<execution>
+								<id>jspc</id>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>jspc</goal>
+								</goals>
+								<configuration>
+									<classesDirectory><!-- ${jspc.work.dir}/lib -->
+										${project.build.outputDirectory}
+									</classesDirectory>
+									<webAppSourceDirectory>
+										${basedir}/../openfire/src/web
+									</webAppSourceDirectory>
+									<generatedClasses>
+										${jspc.mixed.dir}
+									</generatedClasses>
+									<keepSources>true</keepSources>
+									<packageRoot>${admin.plugin.jsp}</packageRoot>
+									<verbose>true</verbose>
+									<webXml>${basedir}/build/openfire/plugins/admin/webapp/WEB-INF/web.xml</webXml>
+									<mergeFragment>true</mergeFragment>
+									<webXmlFragment>${megered.web.xml.dir}/webfrag.xml
+									</webXmlFragment>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>openfire</id>
+			<activation>
+				<property>
+					<name>openfire</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<phase>prepare-package</phase>
+								<configuration>
+									<!-- <tasks> <taskdef resource="net/sf/antcontrib/antcontrib.properties" 
+										classpathref="maven.plugin.classpath" /> </tasks> -->
+									<target>
+										<echo message="@@@@_build openfire with ant" />
+										<echo message="@@@@_lib.dependencies maven @@ ${lib.dependencies}" />
+										<property name="jspc_dir" value="${jspc.dir}" />
+										<property name="jspc_classes" value="${jspc.classes}" />
+										<property name="jspc_mixed_dir" value="${jspc.mixed.dir}" />
+										<property name="project_artifactId" value="${project.artifactId}" />
+										<property name="admin_jsp" value="${admin.plugin.jar.name}" />
+										<property name="megered_web_xml_dir" value="${megered.web.xml.dir}" />
+										<property name="lib_dependencies" value="${lib.dependencies}" />
+
+										<echo message=">>> copy opefnire templeta app" />
+										<copy todir="${openfire.dir}" overwrite="true">
+											<fileset dir="${basedir}/build/openfire" includes="**/*" />
+										</copy>
+
+										<echo message=">>> copy dependencies lib " />
+										<copy todir="${openfire.dir}/lib" overwrite="true">
+											<fileset dir="${lib.dependencies}" includes="*.*" />
+										</copy>
+
+										<echo message=">>> copy jsp java " />
+										<copy todir="${jspc.java.dir}" overwrite="true">
+											<fileset dir="${jspc.mixed.dir}" includes="**/*.java" />
+										</copy>
+
+										<echo message=">>> copy jsp class" />
+										<copy todir="${jspc.classes.dir}" overwrite="true">
+											<fileset dir="${jspc.mixed.dir}" includes="**/*.class" />
+										</copy>
+
+										<jar jarfile="${jspc.work.dir}/admin-jsp.jar">
+											<fileset dir="${jspc.classes.dir}" includes="**/*.class" />
+										</jar>
+
+										<echo message=">>> copy admin-jsp.jar" />
+										<copy todir="${openfire.dir}/plugins/admin/webapp/WEB-INF/lib"
+											overwrite="true">
+											<fileset dir="${jspc.work.dir}" includes="admin-jsp.jar" />
+										</copy>
+
+										<echo message=">>> copy admin web.xml" />
+										<copy todir="${openfire.dir}/plugins/admin/webapp/WEB-INF"
+											overwrite="true">
+											<fileset dir="${basedir}/target" includes="web.xml" />
+										</copy>
+
+										<echo> -----------成功拷贝应用配置 </echo>
+										<copy todir="${basedir}/target/openfire/conf" overwrite="true">
+											<fileset dir="${basedir}/target/classes/app_conf" />
+										</copy>
+
+										<echo> ----------------成功拷贝插件配置 </echo>
+										<copy
+											todir="${basedir}/target/openfire/plugins/admin/webapp/WEB-INF/classes"
+											overwrite="true">
+											<fileset dir="${basedir}/target/classes/admin_plugin" />
+										</copy>
+
+										<!-- <ant antfile="${basedir}/build/build.xml"> <target name="tar-openfire" 
+											/> </ant> -->
+
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>copy-plugins</id>
+			<activation>
+				<property>
+					<name>copy-plugins</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.reucon.maven.plugins</groupId>
+						<artifactId>maven-openfire-plugin</artifactId>
+						<version>1.0.2-SNAPSHOT</version>
+						<executions>
+							<execution>
+								<id>copy-file</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy-file</goal>
+								</goals>
+								<configuration>
+									<srcDirOfCopied>
+										${basedir}/target/openfire/lib
+									</srcDirOfCopied>
+									<srcNameOfCopied>
+										imserver-plugin-*-*
+									</srcNameOfCopied>
+									<targetDirOfCopied>
+										${basedir}/target/openfire/plugins
+									</targetDirOfCopied>
+									<deleteSrcFile>true</deleteSrcFile>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>ofgzip</id>
+			<activation>
+				<property>
+					<name>ofgzip</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<configuration>
+									<target>
+										<ant antfile="${basedir}/build/build.xml">
+											<target name="tar-openfire" />
+										</ant>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+	<dependencies>
+		<dependency>
+            <groupId>org.jivesoftware.openfire</groupId>
+            <artifactId>xfire-core</artifactId>
+            <version>3.9.4</version>
+		</dependency>
+
+		<!--<dependency>
+			<groupId>sitong.thinker.imserver</groupId>
+			<artifactId>imserver-common</artifactId>
+			<version>3.9.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>sitong.thinker.imserver</groupId>
+			<artifactId>imserver-web-api</artifactId>
+			<version>3.9.4</version>
+		</dependency>-->
+
+
+
+		<!--<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>-->
+
+	</dependencies>
+
+</project>
