@@ -328,7 +328,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jivesoftware.openfire</groupId>
-			<artifactId>xfire-core</artifactId>
+			<artifactId>xfire-openfire</artifactId>
 			<version>3.9.4</version>
 		</dependency>
 

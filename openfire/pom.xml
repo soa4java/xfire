@@ -9,7 +9,7 @@
 	</parent>
 
 	<groupId>org.jivesoftware.openfire</groupId>
-	<artifactId>xfire-core</artifactId>
+	<artifactId>xfire-openfire</artifactId>
 	<name>Openfire</name>
 	<version>3.9.4</version>
 
