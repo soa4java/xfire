@@ -157,7 +157,7 @@
     }
 
     // Set page vars
-    if (errors.size() == 0) {
+    if (errors.size() == 0 && auditManager != null) {
         auditEnabled = auditManager.isEnabled();
         auditMessages = auditManager.isAuditMessage();
         auditPresence = auditManager.isAuditPresence();
