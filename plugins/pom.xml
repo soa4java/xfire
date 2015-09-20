@@ -2,16 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<!-- <parent> <groupId>sitong.thinker.imserver</groupId> <artifactId>imserver-parent</artifactId> 
-		<version>3.9.4-SNAPSHOT</version> <relativePath>../parent</relativePath> 
-		</parent> -->
 	<groupId>org.jivesoftware.openfire</groupId>
 	<artifactId>xfire-plugin-all</artifactId>
 	<name>plugin-all</name>
-	<version>3.9.4</version>
+	<version>3.10.3</version>
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>auth</module>
 	</modules>
 
 	<properties>
@@ -19,13 +17,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>sitong.thinker.imserver</groupId>
-			<artifactId>imserver-parent</artifactId>
-			<version>3.9.4-SNAPSHOT</version>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -74,7 +65,7 @@
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
-						
+
 					</configuration>
 				</plugin>
 

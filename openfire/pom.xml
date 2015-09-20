@@ -11,7 +11,7 @@
 	<groupId>org.jivesoftware.openfire</groupId>
 	<artifactId>xfire-openfire</artifactId>
 	<name>Openfire</name>
-	<version>3.9.4</version>
+	<version>3.10.3</version>
 
 	<packaging>jar</packaging>
 	<properties>
