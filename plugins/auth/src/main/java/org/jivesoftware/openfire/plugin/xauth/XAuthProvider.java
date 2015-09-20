@@ -51,7 +51,7 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 			return;
 		}
 		
-		userService.validate(new UserValidatePojo("yanrc", "123"));
+		userService.validate(new UserValidatePojo(username, password));
 
 		if (username == null || password == null) {
 			throw new UnauthorizedException();
