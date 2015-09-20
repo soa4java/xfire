@@ -6,7 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
+import net.yanrc.web.xweb.uic.service.UserService;
+import net.yanrc.web.xweb.uic.service.validate.UserValidatePojo;
+
 import org.jivesoftware.database.DbConnectionManager;
+import org.jivesoftware.of.common.spring.SpringContextHolder;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.auth.AuthProvider;
 import org.jivesoftware.openfire.auth.ConnectionException;
@@ -27,6 +31,8 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 	private boolean verifyEnable;
 	private boolean anonymousAuthEnable;
 
+	private UserService userService;
+
 	{
 		verifyEnable = JiveProperties.getInstance().getBooleanProperty(account_verify_enable, false);
 		anonymousAuthEnable = JiveProperties.getInstance().getBooleanProperty(xmpp_auth_anonymous, false);
@@ -34,7 +40,7 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 	}
 
 	public XAuthProvider() {
-		
+		userService = SpringContextHolder.getBean("userService", UserService.class);
 	}
 
 	@Override
@@ -44,6 +50,8 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 		if (anonymousAuthEnable) {
 			return;
 		}
+		
+		userService.validate(new UserValidatePojo("yanrc", "123"));
 
 		if (username == null || password == null) {
 			throw new UnauthorizedException();

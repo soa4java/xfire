@@ -1127,13 +1127,19 @@
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>dubbo</artifactId>
-				<version>2.5.3</version>
+				<version>2.5.4-SNAPSHOT</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.zookeeper</groupId>
 				<artifactId>zookeeper</artifactId>
-				<version>3.4.5</version>
+				<version>3.4.6</version>
 			</dependency>
 
 			<dependency>
@@ -1141,6 +1147,19 @@
 				<artifactId>zkclient</artifactId>
 				<version>0.4</version>
 			</dependency>
+
+			<!-- dubbo service start -->
+			<dependency>
+				<groupId>net.yanrc.web</groupId>
+				<artifactId>uic-service-api</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.yanrc.web</groupId>
+				<artifactId>yanrc_common </artifactId>
+				<version>1.0.2-SNAPSHOT</version>
+			</dependency>
+			<!-- dubbo service end -->
 
 			<!-- Test Artifacts -->
 			<dependency>
@@ -1327,7 +1346,7 @@
 			<groupId>cn.com.servyou.openfire</groupId>
 			<artifactId>dbutil-jive</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
@@ -1565,9 +1584,9 @@
 		</dependency>
 
 		<dependency>
-				<groupId>cn.com.servyou.openfire</groupId>
-				<artifactId>proxool</artifactId>
-			</dependency>
+			<groupId>cn.com.servyou.openfire</groupId>
+			<artifactId>proxool</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>log4j</groupId>
@@ -1775,6 +1794,17 @@
 			<groupId>com.101tec</groupId>
 			<artifactId>zkclient</artifactId>
 		</dependency>
+
+		<!-- dubbo service start -->
+		<dependency>
+			<groupId>net.yanrc.web</groupId>
+			<artifactId>uic-service-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.yanrc.web</groupId>
+			<artifactId>yanrc_common </artifactId>
+		</dependency>
+		<!-- dubbo service end -->
 
 		<!-- jetty9 jsp -->
 
