@@ -16,6 +16,7 @@
 		<module>./startup</module>
 		<module>./common</module>
 		<module>/plugins</module>
+		<module>/service</module>
 		<!-- <module>/api</module> -->
 		<module>./bundle</module>
 		

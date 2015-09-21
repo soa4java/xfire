@@ -10,6 +10,7 @@
 
 	<modules>
 		<module>auth</module>
+                <module>presence</module>
 	</modules>
 
 	<properties>
