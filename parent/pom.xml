@@ -1151,13 +1151,13 @@
 			<!-- dubbo service start -->
 			<dependency>
 				<groupId>net.yanrc.web</groupId>
-				<artifactId>uic-service-api</artifactId>
+				<artifactId>uic-module-api</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>net.yanrc.web</groupId>
-				<artifactId>presence-service-api</artifactId>
+				<artifactId>presence-module-api</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 
@@ -1803,14 +1803,14 @@
 		</dependency>
 
 		<!-- dubbo service start -->
-		<dependency>
+		<dependency>  
 			<groupId>net.yanrc.web</groupId>
-			<artifactId>uic-service-api</artifactId>
+			<artifactId>uic-module-api</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>net.yanrc.web</groupId>
-			<artifactId>presence-service-api</artifactId>
+			<artifactId>presence-module-api</artifactId>
 		</dependency>
 
 		<dependency>

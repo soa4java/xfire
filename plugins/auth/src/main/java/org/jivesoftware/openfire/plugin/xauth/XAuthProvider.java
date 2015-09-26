@@ -6,9 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import net.yanrc.web.xweb.uic.service.UserService;
-import net.yanrc.web.xweb.uic.service.validate.UserValidatePojo;
+import net.yanrc.app.common.error.Message;
+import net.yanrc.app.common.result.Result;
+import net.yanrc.web.xweb.uic.api.UserApi;
+import net.yanrc.web.xweb.uic.api.validate.UserValidatePojo;
 
+import org.apache.commons.lang.StringUtils;
 import org.jivesoftware.database.DbConnectionManager;
 import org.jivesoftware.of.common.spring.SpringContextHolder;
 import org.jivesoftware.openfire.XMPPServer;
@@ -27,31 +30,22 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 
 	private Logger logger = LoggerFactory.getLogger(XAuthProvider.class);
 	private String account_verify_enable = "account.verify.enable";
-	private String xmpp_auth_anonymous = "xmpp.auth.anonymous";
 	private boolean verifyEnable;
-	private boolean anonymousAuthEnable;
 
-	private UserService userService;
+	private UserApi userApi;
 
 	{
-		verifyEnable = JiveProperties.getInstance().getBooleanProperty(account_verify_enable, false);
-		anonymousAuthEnable = JiveProperties.getInstance().getBooleanProperty(xmpp_auth_anonymous, false);
+		verifyEnable = JiveProperties.getInstance().getBooleanProperty(account_verify_enable, true);
 		PropertyEventDispatcher.addListener(this);
 	}
 
 	public XAuthProvider() {
-		userService = SpringContextHolder.getBean("userService", UserService.class);
+		userApi = SpringContextHolder.getBean("userApi", UserApi.class);
 	}
 
 	@Override
 	public void authenticate(String username, String password) throws UnauthorizedException, ConnectionException,
 			InternalUnauthenticatedException {
-
-		if (anonymousAuthEnable) {
-			return;
-		}
-		
-		userService.validate(new UserValidatePojo(username, password));
 
 		if (username == null || password == null) {
 			throw new UnauthorizedException();
@@ -59,8 +53,42 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 
 		username = getUserNameForAuth(username);
 
+		Result<Message> result;
 		if (verifyEnable) {
+			try {
+				result = userApi.validate(new UserValidatePojo(username, password));
+				
+				if( !result.isSuccess() ){
+					if(StringUtils.equalsIgnoreCase(password, getPasswordValue(username))){
+						return;
+					}
+				}
+				
+			} catch (Throwable t) {
+				logger.error("remote service invoke error!", t);
+				throw new UnauthorizedException("service error!");
+			}
 
+			if (!result.isSuccess()) {
+				logger.error("UserApi.validate fail({},{}),caurse:{}", username, password, result.getMessage()
+						.getText());
+				throw new UnauthorizedException(result.getMessage().getCode());
+			}
+
+		} else {
+
+			String psd = null;
+
+			try {
+				psd = getPasswordValue(username);
+			} catch (UserNotFoundException e) {
+				logger.error("user not found by name", e);
+				throw new UnauthorizedException("user not found");
+			}
+
+			if (!StringUtils.equalsIgnoreCase(password, psd)) {
+				throw new UnauthorizedException("name or password  error!");
+			}
 		}
 
 	}
@@ -150,11 +178,6 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 			if (value != null) {
 				verifyEnable = Boolean.parseBoolean(value);
 			}
-		} else if (xmpp_auth_anonymous.equals(property)) {
-			String value = (String) params.get("value");
-			if (value != null) {
-				anonymousAuthEnable = Boolean.parseBoolean(value);
-			}
 		}
 
 	}
@@ -162,8 +185,6 @@ public class XAuthProvider implements AuthProvider, PropertyEventListener {
 	public void propertyDeleted(String property, Map<String, Object> params) {
 		if (account_verify_enable.equals(property)) {
 			verifyEnable = false;
-		} else if (xmpp_auth_anonymous.equals(property)) {
-			anonymousAuthEnable = false;
 		}
 	}
 

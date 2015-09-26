@@ -12,8 +12,10 @@ import org.jivesoftware.of.common.plugin.PluginAdaptor;
 import org.jivesoftware.of.common.service.RestService;
 import org.jivesoftware.openfire.auth.AuthorizationManager;
 import org.jivesoftware.openfire.auth.AuthorizationPolicy;
+import org.jivesoftware.openfire.auth.DefaultAuthProvider;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
+import org.jivesoftware.openfire.user.DefaultUserProvider;
 import org.jivesoftware.util.Encryptor;
 import org.jivesoftware.util.JiveGlobals;
 import org.slf4j.Logger;
@@ -23,36 +25,39 @@ import com.google.common.collect.Lists;
 
 public class AuthPlugin extends PluginAdaptor implements Plugin {
 	private Logger logger = LoggerFactory.getLogger(AuthPlugin.class);
-	private String update_propertiry_sql = "UPDATE ofProperty SET propValue=? WHERE name=?";
-	private String provider_auth_param_key = "provider.auth.className";
+	private String updatePropertirySQL = "UPDATE ofProperty SET propValue=? WHERE name=?";
+	private String providerAuthClassNameKey = "provider.auth.className";
 	private ArrayList<AuthorizationPolicy> defaultAuthorizationPolicies = Lists.newArrayList();
-	private String provider_user_className_key = "provider.user.className";
-	private String default_provider_user_className = JiveGlobals.getProperty(provider_user_className_key);
+	private String providerUserClassNameKey = "provider.user.className";
 
-	private String defaultProviderAuthClassname = JiveGlobals.getProperty(provider_auth_param_key);;
+	private String defaultProviderUserClassName = JiveGlobals.getProperty(providerUserClassNameKey);
+	private String defaultProviderAuthClassname = JiveGlobals.getProperty(providerAuthClassNameKey);;
 
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
 		defaultAuthorizationPolicies.addAll(AuthorizationManager.getAuthorizationPolicies());
 		AuthorizationManager.getAuthorizationPolicies().clear();
 		AuthorizationManager.getAuthorizationPolicies().add(new XAuthorizationPolicy());
 
-		JiveGlobals.setProperty(provider_user_className_key, XUserProvider.class.getName());
+		JiveGlobals.setProperty(providerUserClassNameKey, XUserProvider.class.getName());
 
 		String providerAuthClassname = XAuthProvider.class.getName();
-		JiveGlobals.setProperty(provider_auth_param_key, providerAuthClassname);
+		JiveGlobals.setProperty(providerAuthClassNameKey, providerAuthClassname);
 
-		if (!StringUtils.equals(defaultProviderAuthClassname, providerAuthClassname)) {
-			//			updateProperty(provider_auth_param_key, defaultProviderAuthClassname);
+		if (StringUtils.isNotBlank(defaultProviderUserClassName)) {
+			updateProperty(providerAuthClassNameKey, defaultProviderUserClassName);//DefaultAuthProvider.class.getName()
+		}
+
+		if (StringUtils.isNotBlank(defaultProviderAuthClassname)) {
+			updateProperty(providerUserClassNameKey, defaultProviderAuthClassname);//DefaultUserProvider.class.getName()
 		}
 	}
 
 	public void destroyPlugin() {
 		AuthorizationManager.getAuthorizationPolicies().clear();
 		AuthorizationManager.getAuthorizationPolicies().addAll(defaultAuthorizationPolicies);
-		
-		JiveGlobals.setProperty(provider_user_className_key, default_provider_user_className);
 
-		JiveGlobals.setProperty(provider_auth_param_key, defaultProviderAuthClassname);
+		JiveGlobals.setProperty(providerUserClassNameKey, defaultProviderUserClassName);
+		JiveGlobals.setProperty(providerAuthClassNameKey, defaultProviderAuthClassname);
 	}
 
 	private void updateProperty(String name, String value) {
@@ -61,7 +66,7 @@ public class AuthPlugin extends PluginAdaptor implements Plugin {
 		PreparedStatement pstmt = null;
 		try {
 			con = DbConnectionManager.getConnection();
-			pstmt = con.prepareStatement(update_propertiry_sql);
+			pstmt = con.prepareStatement(updatePropertirySQL);
 			pstmt.setString(1, JiveGlobals.isPropertyEncrypted(name) ? encryptor.encrypt(value) : value);
 			pstmt.setString(2, name);
 			pstmt.executeUpdate();

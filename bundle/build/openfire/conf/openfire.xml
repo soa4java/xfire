@@ -56,8 +56,8 @@
       <serverURL>jdbc:mysql://192.168.70.82:3306/of?rewriteBatchedStatements=true</serverURL>  
       <!--  <username encrypted="true">e517633d1b6a7d6a3738afa67df357b5272e3f06a848e65df145015d4b71b683</username> 
       <password encrypted="true">e9e94256eef611acc7bd8e8bc401a30bd9212fd57d35746a2eb9c0c1ae4d5e32</password> -->  
-      <username encrypted="true">d42e5e249ff265b1231a8379965de269f5222473c34f6f7e</username>  
-      <password encrypted="true">78aeac4db075fabe65162eea962c02205f60dac8d0678fb0</password>  
+      <username encrypted="true">d42e5e249ff265b1231a8379965de269f5222473c34f6f7e</username>  <!-- test -->
+      <password encrypted="true">78aeac4db075fabe65162eea962c02205f60dac8d0678fb0</password>  <!-- mysql -->
       <testSQL>select 1</testSQL>  
       <testBeforeUse>false</testBeforeUse>  
       <testAfterUse>false</testAfterUse>  
