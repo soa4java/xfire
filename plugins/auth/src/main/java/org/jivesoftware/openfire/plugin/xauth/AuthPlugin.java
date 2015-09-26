@@ -50,6 +50,8 @@ public class AuthPlugin extends PluginAdaptor implements Plugin {
 		if (StringUtils.isNotBlank(defaultProviderAuthClassname)) {
 			updateProperty(providerUserClassNameKey, defaultProviderAuthClassname);//DefaultUserProvider.class.getName()
 		}
+		
+		System.out.println("auth init succeed!");
 	}
 
 	public void destroyPlugin() {

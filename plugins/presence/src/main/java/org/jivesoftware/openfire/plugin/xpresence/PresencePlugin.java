@@ -20,6 +20,8 @@ public class PresencePlugin extends PluginAdaptor implements Plugin {
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
 		interceptorManager = InterceptorManager.getInstance();
 		interceptorManager.addInterceptor(interceptor);
+		
+		System.out.println("presence init succeed!");
 	}
 
 	public void destroyPlugin() {

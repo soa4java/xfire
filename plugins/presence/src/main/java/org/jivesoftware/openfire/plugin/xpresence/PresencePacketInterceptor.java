@@ -22,15 +22,16 @@ public class PresencePacketInterceptor implements PacketInterceptor {
 	@Override
 	public void interceptPacket(Packet packet, Session session, boolean incoming, boolean processed)
 			throws PacketRejectedException {
-
-		if (incoming && processed && packet instanceof Presence) {
-			Presence p = (Presence) packet;
-			JID jid = p.getFrom();
-			Presence.Show show = p.getShow();
-			String showStr = (show != null ? show.name() : "");
-			PresenceDTO presence =new PresenceDTO(jid.getNode(), jid.getDomain(), "0", jid.getResource(), p.getStatus(), p.getShow().toString(), "wifi", System.currentTimeMillis()) ; 
-			presenceApi.putPresence(presence);
+		if (packet instanceof Presence) {
+			if (incoming && processed) {
+				Presence p = (Presence) packet;
+				JID jid = p.getFrom();
+				Presence.Show show = p.getShow();
+				String showStr = (show != null ? show.name() : "");
+				PresenceDTO presence = new PresenceDTO(jid.getNode(), jid.getDomain(), "0", jid.getResource(),
+						p.getStatus(), showStr, "wifi", System.currentTimeMillis());
+				presenceApi.putPresence(presence);
+			}
 		}
-
 	}
 }
