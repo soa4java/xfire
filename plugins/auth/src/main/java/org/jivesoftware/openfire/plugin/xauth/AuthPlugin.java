@@ -41,8 +41,8 @@ public class AuthPlugin extends PluginAdaptor implements Plugin {
 		JiveGlobals.setProperty(providerUserClassNameKey, XUserProvider.class.getName());
 		JiveGlobals.setProperty(providerAuthClassNameKey, XAuthProvider.class.getName());
 
-		updateProperty(providerAuthClassNameKey, defaultProviderUserClassName);
-		updateProperty(providerUserClassNameKey, defaultProviderAuthClassname);
+		updateProperty(providerUserClassNameKey, defaultProviderUserClassName);
+		updateProperty(providerAuthClassNameKey, defaultProviderAuthClassname);
 
 		System.out.println("auth init succeed!");
 	}
