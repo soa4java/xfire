@@ -129,6 +129,6 @@
         <constructor-arg value="utf-8"/>
     </bean>
     
-    <bean id="objectMapper" class="sitong.thinker.common.util.JsonUtils"
+    <bean id="objectMapper" class="net.yanrc.app.common.util.JsonUtils"
           factory-method="getObjectMapper"/>
 </beans>

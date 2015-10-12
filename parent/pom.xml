@@ -1149,6 +1149,13 @@
 			</dependency>
 
 			<!-- dubbo service start -->
+
+			<dependency>
+				<groupId>net.yanrc.web</groupId>
+				<artifactId>groupchat-module-service</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
 			<dependency>
 				<groupId>net.yanrc.web</groupId>
 				<artifactId>uic-module-api</artifactId>
@@ -1174,12 +1181,6 @@
 				<artifactId>spring-test</artifactId>
 				<version>${spring-framework.version}</version>
 				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>sitong.thinker</groupId>
-				<artifactId>sitong-common</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
@@ -1803,7 +1804,13 @@
 		</dependency>
 
 		<!-- dubbo service start -->
-		<dependency>  
+
+		<dependency>
+			<groupId>net.yanrc.web</groupId>
+			<artifactId>groupchat-module-service</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>net.yanrc.web</groupId>
 			<artifactId>uic-module-api</artifactId>
 		</dependency>
@@ -1898,11 +1905,6 @@
 			<groupId>javax.xml.ws</groupId>
 			<artifactId>jaxws-api</artifactId>
 			<version>2.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>sitong.thinker</groupId>
-			<artifactId>sitong-common</artifactId>
 		</dependency>
 
 		<dependency>

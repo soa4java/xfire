@@ -1,0 +1,53 @@
+package org.jivesoftware.of.common.error;
+
+public enum ErrorCodeEnumOfGrobal {
+
+	SUCCEED("00000000"),
+	OK("200"),
+
+	GROUP_NOT_EXISTS("80365500"), // 组不存在
+	QUIT_GROUP_FAIL("80365501"), //
+	GET_GROUP_MEMBER_FAIL("80365502"), //
+	INVITE_MEMBER_FAIL("80365503"), //
+	GROUP_EXISTS_FAIL("80365504"), //
+	CREATE_GROUP_FAIL("80365510"), // 创建组失败
+	GROUP_EXISTED("80365511"), // 组已经存在
+	INVITE_MEMEBERS_NOT_BLANK("80365512"), // 受邀请的成员列表不能为空
+	GROUP_UPDATE_FAIL("80365513"), // 组信息设置失败。
+	QUERY_GROUP_ERROR_CODE("80365514"),
+	
+	GET_PLUGIN_FAIL("80365515"), //获取插件失败
+	GET_SERVICE_FAIL("80365516"), //获取服务失败
+	
+	PERSISTENCE_TO_TEMP("80365517"),
+	GROUP_MEMBER_JID_FORMATE_ERROR("80365518"),
+	TEMP_TO_PERSISTENCE_TO("80365519"),
+
+	TOKEN_NOT_FOUND("80365526"), //
+	QUERY_PRESENCE_PARAMS_BLANK("80365530"), //判断用户是否在线接口参数为空
+
+	SEND_QUEUE_POSITION_PARAMS_LANK("80365532"), //推送排队信息,接口参数为空
+	CONSULT_OF_LINE("80365536"), //咨询人不在线
+	AGENT_OF_LINE("80365537"), //坐席不在线
+	BATCH_SEND_QUEUE_POSITION_PARAMS_LANK("80365540"), //批量推送排队信息,接口参数为空
+	SEND_ERROR_MESSAGE_PARAMS_LANK("80365542"), //批量推送排队信息,接口参数为空
+	CREATE_SESSION_MESSAGE_PARAMS_LANK("80365544"), //创建会话,接口参数为空
+
+	BROADCAST_PARAMS_LANK("80365550"), //广播参数都不能为空
+	PARAMS_WRONG("80365551"), //参数错误
+
+
+	SERVICE_ERROR("80365590"), //判断用户是否在线接口参数为空
+	;
+
+	ErrorCodeEnumOfGrobal(String code) {
+		this.code = code;
+	}
+
+	private String code;
+
+	public String code() {
+		return code;
+	}
+
+}

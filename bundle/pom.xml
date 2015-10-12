@@ -356,6 +356,12 @@
 			<version>3.10.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>sitong.thinker.imserver</groupId>
+			<artifactId>xfire-plugin-groupchat</artifactId>
+			<version>3.9.4</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

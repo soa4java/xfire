@@ -1,0 +1,20 @@
+<plugin>
+    <class>sitong.thinker.of.plugin.groupchat.GroupChatPlugin</class>
+    <name>groupchat</name>
+    <description>groupchat </description>
+    <author>servyou group chat</author>
+    <version>0.0.1</version>
+    <date>09/27/2014</date>
+    <url>http://www.servyou.com.cn</url>
+    <minServerVersion>3.7.0</minServerVersion>
+    <adminconsole>
+	  <tab id="grouchat" name="${group.chat}" url="jsp/groups.jsp">
+			<sidebar id="grouchat-sidebar-groups" name="${group.query}">
+				<item id="groupchat-groups" name="${group.query}"
+					  url="jsp/groups.jsp"/>
+				<item id="groupchat-groups1" name="${group.query}"
+					  url="jsp/groups.jsp"/>
+			</sidebar>
+	   </tab>
+	</adminconsole>
+</plugin>

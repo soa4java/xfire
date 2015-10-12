@@ -30,8 +30,8 @@ public class AuthPlugin extends PluginAdaptor implements Plugin {
 	private ArrayList<AuthorizationPolicy> defaultAuthorizationPolicies = Lists.newArrayList();
 	private String providerUserClassNameKey = "provider.user.className";
 
-	private String defaultProviderUserClassName = JiveGlobals.getProperty(providerUserClassNameKey);
-	private String defaultProviderAuthClassname = JiveGlobals.getProperty(providerAuthClassNameKey);;
+	private String defaultProviderUserClassName = DefaultUserProvider.class.getName();
+	private String defaultProviderAuthClassname = DefaultAuthProvider.class.getName();
 
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
 		defaultAuthorizationPolicies.addAll(AuthorizationManager.getAuthorizationPolicies());
@@ -39,18 +39,11 @@ public class AuthPlugin extends PluginAdaptor implements Plugin {
 		AuthorizationManager.getAuthorizationPolicies().add(new XAuthorizationPolicy());
 
 		JiveGlobals.setProperty(providerUserClassNameKey, XUserProvider.class.getName());
+		JiveGlobals.setProperty(providerAuthClassNameKey, XAuthProvider.class.getName());
 
-		String providerAuthClassname = XAuthProvider.class.getName();
-		JiveGlobals.setProperty(providerAuthClassNameKey, providerAuthClassname);
+		updateProperty(providerAuthClassNameKey, defaultProviderUserClassName);
+		updateProperty(providerUserClassNameKey, defaultProviderAuthClassname);
 
-		if (StringUtils.isNotBlank(defaultProviderUserClassName)) {
-			updateProperty(providerAuthClassNameKey, defaultProviderUserClassName);//DefaultAuthProvider.class.getName()
-		}
-
-		if (StringUtils.isNotBlank(defaultProviderAuthClassname)) {
-			updateProperty(providerUserClassNameKey, defaultProviderAuthClassname);//DefaultUserProvider.class.getName()
-		}
-		
 		System.out.println("auth init succeed!");
 	}
 
