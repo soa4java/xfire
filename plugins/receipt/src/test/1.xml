@@ -1,0 +1,13 @@
+<iq from='juliet@capulet.lit/balcony' type='set' id='pub1'>
+	<x xmlns='http://www.servyou.com.cn/protocol/client/version'>
+		<version>1.0.30</version>
+	</x>
+</iq>
+
+
+<iq to='servyou' from='cf1dc68cdfe3a04b9154e8f85beb835c@servyou/ERC'
+	id='uid:552e2f08:00294823:0000bdb' type='set' xmlns='jabber:client'>
+	<query xmlns='http://www.servyou.com.cn/protocol/client/version'>
+		<version>1.0.30</version>
+	</query>
+</iq>

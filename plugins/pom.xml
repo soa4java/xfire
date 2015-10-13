@@ -10,8 +10,10 @@
 
 	<modules>
 		<module>auth</module>
-                <module>presence</module>
-                <module>groupchat</module>
+		<module>presence</module>
+		<module>groupchat</module>
+		<module>time</module>
+		<module>receipt</module>
 	</modules>
 
 	<properties>

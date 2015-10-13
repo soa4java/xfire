@@ -346,6 +346,12 @@
 
 		<dependency>
 			<groupId>org.jivesoftware.openfire</groupId>
+			<artifactId>xfire-plugin-time</artifactId>
+			<version>3.10.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jivesoftware.openfire</groupId>
 			<artifactId>xfire-plugin-auth</artifactId>
 			<version>3.10.3</version>
 		</dependency>
