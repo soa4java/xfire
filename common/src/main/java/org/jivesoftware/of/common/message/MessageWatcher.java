@@ -19,9 +19,12 @@ import org.xmpp.packet.Presence;
 public class MessageWatcher implements PacketInterceptor {
 
 	volatile static MessageWatcher instance = new MessageWatcher();
+	
+	static{
+		InterceptorManager.getInstance().addInterceptor(instance);
+	}
 
 	private MessageWatcher() {
-		InterceptorManager.getInstance().addInterceptor(instance);
 	}
 
 	public static MessageWatcher getInstance() {

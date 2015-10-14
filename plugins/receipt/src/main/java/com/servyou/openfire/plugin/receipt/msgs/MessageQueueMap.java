@@ -10,11 +10,16 @@ public class MessageQueueMap {
 	private static ConcurrentHashMap<ClientSession, MessageQueueWaitingReceipt> map = new ConcurrentHashMap<ClientSession, MessageQueueWaitingReceipt>();
 
 	public static MessageQueueWaitingReceipt get(ClientSession session) {
-		return map.get(session);
+		MessageQueueWaitingReceipt queue = map.get(session);
+		if(null == queue){
+			queue = new MessageQueueWaitingReceipt();
+			map.put(session, queue);
+		}
+		return queue;
 	}
 	
 	public static MessageQueueWaitingReceipt remove(ClientSession session) {
-		return map.remove(session);
+		 return map.remove(session);
 	}
 
 	public static ConcurrentLinkedQueue<Message> put(ClientSession session, Message message) {
@@ -22,6 +27,7 @@ public class MessageQueueMap {
 		if (queue == null) {
 			queue = new MessageQueueWaitingReceipt();
 		}
+		queue.setCount(0);
 		queue.setTimestamp(System.currentTimeMillis());
 		queue.add(message);
 		return map.put(session, queue);

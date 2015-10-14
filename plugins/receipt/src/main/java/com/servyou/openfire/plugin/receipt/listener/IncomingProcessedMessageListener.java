@@ -45,7 +45,7 @@ public class IncomingProcessedMessageListener implements MessageListener {
 				return;
 			}
 
-			//服务端回执处理
+			//根据发送方的版本判断，是否需要给发送方回执
 			if (xmppServer.isLocal(msg.getFrom()) && versionMatch(msg.getFrom())) {
 				sendSrvReceipt(msg, session);
 			}
@@ -67,25 +67,26 @@ public class IncomingProcessedMessageListener implements MessageListener {
 				return;
 			}
 
-			for (ClientSession clntSess : toSessions) {
-				JID toJID = clntSess.getAddress();
+			for (ClientSession toClientSess : toSessions) {
+				JID toJID = toClientSess.getAddress();
 				try {
 					toJID.toFullJID();
 				} catch (Throwable t) {
-					logger.error("receipt enQueue error! clntSess:{}", clntSess, t);
+					logger.error("receipt enQueue error! clntSess:{}", toClientSess, t);
 					continue;
 				}
 
-				//入队列处理
+				//根据接受方版本判断，是否需要将消息放入队列，如果接收方多个终端在线，只有一个终端回复了就ok
 				if (!ReceiptMsgUtils.isSendToGroup(msg) && xmppServer.isLocal(toJID) && versionMatch(toJID)) {
-					ClientSession clientSession = (ClientSession) session;
-					MessageQueueWaitingReceipt queue = MessageQueueMap.get(clientSession);
-					queue.offer(msg);
-
-					if (ReceiptsProps.msgEnqueueLogEnable) {
-						logger.error("msg enqueue:id:{},msg:{}", msg.getID(), msg.toXML());
+					
+					if(toClientSess instanceof ClientSession){
+						ClientSession toClientSession = (ClientSession) toClientSess;
+						MessageQueueWaitingReceipt queue = MessageQueueMap.get(toClientSession);
+						queue.offer(msg);
+						if (ReceiptsProps.msgEnqueueLogEnable) {
+							logger.error("msg enqueue:id:{},toJID:{},msg:{}", msg.getID(),toJID,msg.toXML());
+						}
 					}
-					break;//只要有一个入队列就ok
 				}
 			}
 

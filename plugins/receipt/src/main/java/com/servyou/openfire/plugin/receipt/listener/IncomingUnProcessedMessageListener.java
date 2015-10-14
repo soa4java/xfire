@@ -25,10 +25,6 @@ public class IncomingUnProcessedMessageListener implements MessageListener {
 				return;
 			}
 
-			if (!(session instanceof ClientSession)) {
-				return;
-			}
-
 			if (!ReceiptMsgUtils.isNeedReceipt(msg) || ReceiptMsgUtils.isOfflineMsg(msg) || !xmppServer.isLocal(msg.getFrom())) {
 				return;
 			}

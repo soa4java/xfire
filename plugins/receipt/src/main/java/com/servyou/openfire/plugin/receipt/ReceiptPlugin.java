@@ -46,6 +46,8 @@ public class ReceiptPlugin implements Plugin {
 		MessageWatcher.addMessageListener(incomingUnProcessedMsgListener);
 
 		iqRouter.addHandler(iqVersionHandler);
+		
+		MessageReSender.enable();
 
 		System.out.println(ReceiptPlugin.class.getSimpleName() + " ok...");
 
@@ -62,6 +64,8 @@ public class ReceiptPlugin implements Plugin {
 		MessageWatcher.removeMessageListener(incomingUnProcessedMsgListener);
 		
 		iqRouter.removeHandler(iqVersionHandler);
+		
+		MessageReSender.disable();
 
 		System.out.println(ReceiptPlugin.class.getSimpleName() + " destroy...");
 

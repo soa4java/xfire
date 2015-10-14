@@ -15,7 +15,7 @@ import com.servyou.openfire.plugin.receipt.msgs.MessageQueueWaitingReceipt;
 
 public class PresenceEventListenerForReceipt implements PresenceEventListener {
 
-	private OfflineMessageStrategy messageStrategy = XMPPServer.getInstance().getOfflineMessageStrategy();;
+	private OfflineMessageStrategy messageStrategy = XMPPServer.getInstance().getOfflineMessageStrategy();
 
 	@Override
 	public void availableSession(ClientSession session, Presence presence) {
@@ -34,7 +34,6 @@ public class PresenceEventListenerForReceipt implements PresenceEventListener {
 					}
 				});
 			}
-
 	}
 
 	@Override
