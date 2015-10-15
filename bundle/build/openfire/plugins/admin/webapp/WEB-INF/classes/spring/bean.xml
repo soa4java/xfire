@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+     http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+     http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<context:component-scan base-package="org.jivesoftware">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<context:property-placeholder location="classpath:spring.properties" />
+	
+	<!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="xfire"  />
+ 
+    <!-- 使用multicast广播注册中心暴露发现服务地址 -->
+   <!--  <dubbo:registry address="multicast://224.5.6.7:1234" /> -->
+   <dubbo:registry protocol="zookeeper" address="192.168.150.83:2181" />
+ 
+    <!-- consumer -->
+    <dubbo:reference id="recentContactsApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.contacts.biz.service.RecentContactsApi">
+    	<dubbo:method name="saveGroup" async="true" />
+    </dubbo:reference>
+    <dubbo:reference id="msgDigestApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.contacts.biz.service.MsgDigestApi">
+    	<dubbo:method name="saveOrUpdate" async="true" />
+    </dubbo:reference>
+    
+    <dubbo:reference id="memberApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.MemberApi"/>
+    <dubbo:reference id="groupApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.GroupApi"/>
+    
+    <dubbo:reference id="userApi" interface="net.yanrc.web.xweb.uic.api.UserApi" />
+    
+    <dubbo:reference id="presenceApi" interface="net.yanrc.web.xweb.presence.api.PresenceApi">
+   		 <dubbo:method name="putPresence" async="true" />
+    </dubbo:reference>
+    
+    <bean id="springContextHolder" class="org.jivesoftware.of.common.spring.SpringContextHolder" />
+    <bean id="xExecutor" class="org.jivesoftware.of.common.thread.XExecutor">
+	    <constructor-arg name="nThreadGlobalExecutor" value="${thread.pool.nThreadGlobalExecutor}"/>
+	    <constructor-arg name="globalExecutorPrefix" value="${thread.pool.globalExecutorPrefix}"/>
+	    <constructor-arg name="nThreadPresenceExecutor" value="${thread.pool.nThreadPresenceExecutor}"/>
+	    <constructor-arg name="presenceExecutorPrefix" value="${thread.pool.presenceExecutorPrefix}"/>
+	    <constructor-arg name="nThreadGroupChatExecutor" value="${thread.pool.nThreadGroupChatExecutor}"/>
+	    <constructor-arg name="groupChatExecutorPrefix" value="${thread.pool.groupChatExecutorPrefix}"/>
+    </bean>
+	
+	
+
+	<!-- <mongo:mongo host="${mongo.host}" port="${mongo.port}" />
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate" c:mongo-ref="mongo" c:databaseName="imserver"/> -->
+
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="${redis.pool.maxTotal}" />
+		<property name="maxIdle" value="${redis.pool.maxIdle}" />
+		<property name="maxWaitMillis" value="${redis.pool.maxWaitMillis}" />
+		<property name="testOnBorrow" value="${redis.pool.testOnBorrow}" />
+		<property name="testOnReturn" value="${redis.pool.testOnReturn}" />
+	</bean>
+
+	<bean id="jedisConnFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:hostName="${redis.ip}" 
+		p:port="${redis.port}" 
+		p:use-pool="true"
+		p:poolConfig-ref="jedisPoolConfig" />
+
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+		p:connection-factory-ref="jedisConnFactory">
+		<property name="keySerializer">
+			<bean
+				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="valueSerializer">
+			<bean
+				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="hashKeySerializer">
+			<bean
+				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="hashValueSerializer">
+			<bean
+				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+	</bean>
+
+	
+
+    <!-- <bean id="crossDomainInfoRefreshTask"
+          class="org.jivesoftware.openfire.servyou.crossdomian.task.CrossDomainInfoRefreshTask">
+    </bean>
+    <bean id="crossDomainInfoPullTaskJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="crossDomainInfoRefreshTask" />
+        <property name="targetMethod" value="pull" />
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="crossDomainInfoPushTaskJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="crossDomainInfoRefreshTask" />
+        <property name="targetMethod" value="push" />
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="crossDomainInfoPullTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="crossDomainInfoPullTaskJobDetail" />
+        <property name="cronExpression" value="${event.crossDomainInfo.pull.task.trigger.time.expression}" />
+    </bean>
+    <bean id="crossDomainInfoPushTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="crossDomainInfoPushTaskJobDetail" />
+        <property name="cronExpression" value="${event.crossDomainInfo.push.task.trigger.time.expression}" />
+    </bean>
+    <bean name="startQuertz" lazy-init="false" autowire="no"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="crossDomainInfoPullTaskTrigger" />
+                <ref bean="crossDomainInfoPushTaskTrigger" />
+            </list>
+        </property>
+    </bean> -->
+</beans>
