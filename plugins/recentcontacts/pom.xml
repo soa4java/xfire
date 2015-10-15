@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jivesoftware.openfire</groupId>
+		<artifactId>xfire-plugin-all</artifactId>
+		<version>3.10.3</version>
+	</parent>
+
+	<groupId>org.jivesoftware.openfire</groupId>
+	<artifactId>xfire-plugin-recentcontacts</artifactId>
+	<name>recentcontacts</name>
+	<version>3.10.3</version>
+	<packaging>jar</packaging>
+	<description>recentcontacts</description>
+	<organization>
+		<name>yanrcicheng@163.com</name>
+	</organization>
+
+
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.reucon.maven.plugins</groupId>
+				<artifactId>maven-openfire-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>sitong.thinker.imserver</groupId>
+			<artifactId>imserver-openfire</artifactId>
+			<version>3.9.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>sitong.thinker.imserver</groupId>
+			<artifactId>imserver-common</artifactId>
+			<version>3.9.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>sitong.thinker.imserver</groupId>
+			<artifactId>imserver-api</artifactId>
+			<version>3.9.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+
+
+</project>

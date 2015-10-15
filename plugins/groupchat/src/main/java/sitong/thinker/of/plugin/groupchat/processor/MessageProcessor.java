@@ -2,13 +2,18 @@ package sitong.thinker.of.plugin.groupchat.processor;
 
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import net.yanrc.app.common.util.JsonUtils;
 import net.yanrc.app.common.util.UUIDGenerator;
+import net.yanrc.web.xweb.contacts.biz.service.MsgDigestApi;
+import net.yanrc.web.xweb.contacts.biz.service.RecentContactsApi;
 import net.yanrc.web.xweb.groupchat.biz.service.MemberApi;
 import net.yanrc.web.xweb.groupchat.query.MembersGetQuery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.jivesoftware.of.common.constants.XConstants;
 import org.jivesoftware.of.common.domain.DomainNodeJid;
 import org.jivesoftware.of.common.enums.ImPotocal;
@@ -33,9 +38,13 @@ public class MessageProcessor extends AbstractProcessor {
     XMPPServer server = XMPPServer.getInstance();
     String localDomain = server.getServerInfo().getXMPPDomain();
     MemberApi memberApiConsumer;
+    MsgDigestApi msgDigestApi;
+    RecentContactsApi recentContactsApi;
 
     private MessageProcessor() {
     	memberApiConsumer = SpringContextHolder.getBean("memberApi", MemberApi.class);
+    	msgDigestApi = SpringContextHolder.getBean("msgDigestApi", MsgDigestApi.class);
+    	recentContactsApi = SpringContextHolder.getBean("recentContactsApi", RecentContactsApi.class);
     }
 
     public static MessageProcessor getInstance() {
@@ -99,52 +108,43 @@ public class MessageProcessor extends AbstractProcessor {
 
     }
 
-    //TODO 缓存最近联系人
     private void cacheRecentContacts(final Message message, final Set<String> memberIds) {
-       /* try {
+        try {
             String groupId = message.getTo().getNode();
-            String value = String.format("1_%s", groupId);
 
             if (CollectionUtils.isEmpty(memberIds)) {
                 return;
             }
 
             //所有组成员的最近联系人都有这个组
-            for (String pid : memberIds) {
-                String key = String.format(RedisConstants.LIST_RECENT_CONTACTS, pid);
-                redisTemplate.boundListOps(key).remove(0, value);
-                redisTemplate.boundListOps(key).leftPush(value);
-                redisTemplate.boundListOps(key).trim(0, ServyouProperties.recentContactNum);
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("cacheRecentContacts->group id:{},pid:{}", message.getID(), pid);
-                }
-            }
+            recentContactsApi.saveGroup(groupId, memberIds);
 
         } catch (Throwable t) {
-            LOG.error("cacheRecentContacts error! msg:{}", message.toXML(), t);
+        	LOG.error("cacheRecentContacts error! msg:{}", message.toXML(), t);
         }
-*/
+
     }
 
     private void cacheLastMsgHash(final Message message) {
 
-       /* String key = null;
+        String key = null;
         //存放最后一条消息
         Map<String, String> map = new HashMap<String, String>();
 
         try {
             String groupId = message.getTo().getNode();
             key = groupId;
-            map.put(ServyouConstants.KEY, key);
-            map.put(ServyouConstants.MSG, message.toXML());
-            redisTemplate.boundHashOps(RedisConstants.HASH_DIGEST).put(key, JsonUtils.fromObject(map));
+            map.put(XConstants.KEY, key);
+            map.put(XConstants.MSG, message.toXML());
+
+            msgDigestApi.saveOrUpdate(key, JsonUtils.fromObject(map));
 
             if (LOG.isInfoEnabled()) {
-                LOG.info("cacheLastMsgHash->group id:{},msg:{}", message.getID(), message.toXML());
+            	LOG.info("cacheLastMsgHash->group id:{},msg:{}", message.getID(), message.toXML());
             }
         } catch (Throwable t) {
-            LOG.error("cacheLastMsgHash->group error! hash:{},key:{}; msg:{}", RedisConstants.HASH_DIGEST, key, message.toXML(), t);
-        }*/
+        	LOG.error("cacheLastMsgHash->group error! ,key:{}; msg:{}",  key, message.toXML(), t);
+        }
 
     }
 
