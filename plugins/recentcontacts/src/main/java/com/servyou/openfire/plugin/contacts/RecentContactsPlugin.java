@@ -1,17 +1,17 @@
 package com.servyou.openfire.plugin.contacts;
 
+import java.io.File;
+import java.util.Map;
+
+import org.jivesoftware.of.common.service.RestService;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.interceptor.InterceptorManager;
 import org.jivesoftware.openfire.interceptor.PacketInterceptor;
-import org.jivesoftware.openfire.servyou.service.RestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.servyou.openfire.plugin.contacts.interceptor.RecentContactsMsgInterceptor;
-
-import java.io.File;
-import java.util.Map;
 
 /**
  * @author yanrc
@@ -29,7 +29,6 @@ public class RecentContactsPlugin implements Plugin {
 
     public void destroyPlugin() {
         interceptorManager.removeInterceptor(recentContactsMsgInterceptor);
-        RecentContactsMsgInterceptor.getChatMsgExecutorService().shutdown();
     }
 
     public Map<String, RestService> getRestServiceMap() {

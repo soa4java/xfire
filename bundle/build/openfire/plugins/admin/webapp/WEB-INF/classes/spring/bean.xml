@@ -34,10 +34,7 @@
  
     <!-- consumer -->
     <dubbo:reference id="recentContactsApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.contacts.biz.service.RecentContactsApi">
-    	<dubbo:method name="saveGroup" async="true" />
-    </dubbo:reference>
-    <dubbo:reference id="msgDigestApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.contacts.biz.service.MsgDigestApi">
-    	<dubbo:method name="saveOrUpdate" async="true" />
+    	<dubbo:method name="saveContactsAndMesageDigest" async="true" />
     </dubbo:reference>
     
     <dubbo:reference id="memberApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.MemberApi"/>

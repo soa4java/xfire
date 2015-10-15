@@ -35,18 +35,19 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>sitong.thinker.imserver</groupId>
-			<artifactId>imserver-openfire</artifactId>
-			<version>3.9.4</version>
+			<groupId>org.jivesoftware.openfire</groupId>
+			<artifactId>xfire-openfire</artifactId>
+			<version>3.10.3</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>sitong.thinker.imserver</groupId>
-			<artifactId>imserver-common</artifactId>
-			<version>3.9.4</version>
+			<groupId>org.jivesoftware.openfire</groupId>
+			<artifactId>xfire-common</artifactId>
+			<version>3.10.3</version>
 			<scope>provided</scope>
 		</dependency>
+
 
 		<dependency>
 			<groupId>sitong.thinker.imserver</groupId>
@@ -54,6 +55,7 @@
 			<version>3.9.4</version>
 			<scope>provided</scope>
 		</dependency>
+
 
 	</dependencies>
 

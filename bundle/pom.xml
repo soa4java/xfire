@@ -328,6 +328,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jivesoftware.openfire</groupId>
+			<artifactId>xfire-plugin-recentcontacts</artifactId>
+			<version>3.10.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jivesoftware.openfire</groupId>
 			<artifactId>xfire-openfire</artifactId>
 			<version>3.10.3</version>
 		</dependency>
