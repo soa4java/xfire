@@ -30,7 +30,7 @@ public class IncomingUnProcessedMessageListener implements MessageListener {
 			}
 			String msgId = ReceiptMsgUtils.getMsgIdFromClientReceiptMsg(msg);
 			if (StringUtils.isNotBlank(msgId)) {
-				MessageClearer.remove(msgId, msg.getTo());
+				MessageClearer.remove(msgId, msg.getFrom());
 			}
 		}
 	}

@@ -22,7 +22,7 @@ public abstract class MessageClearer {
 		remove(queue, msgId);
 	}
 
-	public static void removeByToJID(Message message) {
+	public static void removeByToBaredJID(Message message) {
 		Collection<ClientSession> toSessions = SessionManager.getInstance().getSessions(message.getTo().getNode());
 		if (CollectionUtils.isEmpty(toSessions)) {
 			return;
@@ -35,7 +35,7 @@ public abstract class MessageClearer {
 		
 	}
 	
-	public static void removeByFromJID(Message message) {
+	public static void removeByFromFullJID(Message message) {
 		MessageQueueWaitingReceipt queue = MessageQueueMap.get(sessionManager.getSession(message.getFrom()));
 		remove(queue, message.getID());
 	}
@@ -52,7 +52,7 @@ public abstract class MessageClearer {
 			queue.setCount(0);
 			queue.setTimestamp(System.currentTimeMillis());
 		} else {
-			logger.warn("msg dequeu not normal!!");
+			logger.warn("msg dequeue not normal !!");
 
 			Iterator<Message> itr = queue.iterator();
 			while (itr.hasNext()) {

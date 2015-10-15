@@ -24,9 +24,9 @@ public class OfflineMessageListenerForReceipt implements OfflineMessageListener 
 	private void remove(Message message) {
 		if (message.getExtension("x", ReceiptConstants.resendToOffline) != null) {
 			message.deleteExtension("x", ReceiptConstants.resendToOffline);
-			MessageClearer.removeByToJID(message);
+			MessageClearer.removeByToBaredJID(message);
 		} else {
-			MessageClearer.removeByFromJID(message);
+			MessageClearer.removeByFromFullJID(message);
 		}
 	}
 }
