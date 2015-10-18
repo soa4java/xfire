@@ -92,7 +92,9 @@ public class CacheFactory {
 
     static {
         localCacheFactoryClass = JiveGlobals.getProperty(LOCAL_CACHE_PROPERTY_NAME,
-                "org.jivesoftware.util.cache.DefaultLocalCacheStrategy");
+                "org.jivesoftware.util.cache.:q" +
+                        "" +
+                        "");
         clusteredCacheFactoryClass = JiveGlobals.getProperty(CLUSTERED_CACHE_PROPERTY_NAME,
                 "org.jivesoftware.openfire.plugin.util.cache.ClusteredCacheFactory");
 

@@ -15,6 +15,7 @@
 		<module>time</module>
 		<module>receipt</module>
 		<module>recentcontacts</module>
+		<module>hazelcast</module>
 		
 	</modules>
 
