@@ -56,7 +56,7 @@ public class ClusteredCache implements Cache {
      * @param name a name for the cache, which should be unique per vm.
      * @param cache the cache implementation
      */
-    protected ClusteredCache(String name, IMap cache) {
+    public ClusteredCache(String name, IMap cache) {
         map = cache;
         setName(name);
     }

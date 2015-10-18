@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package com.jivesoftware.util.cache;
+package org.jivesoftware.openfire.plugin.util.cache;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -37,6 +37,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import com.jivesoftware.util.cache.ClusterClassLoader;
+import com.jivesoftware.util.cache.ClusterExternalizableUtil;
+import com.jivesoftware.util.cache.ClusterListener;
+import com.jivesoftware.util.cache.ClusteredCache;
 import org.jivesoftware.openfire.JMXManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.cluster.ClusterNodeInfo;
