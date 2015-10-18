@@ -21,7 +21,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring-framework.version>3.2.3.RELEASE</spring-framework.version>
 	</properties>
 
 	<build>
