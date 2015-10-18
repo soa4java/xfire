@@ -48,15 +48,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-
-		<dependency>
-			<groupId>sitong.thinker.imserver</groupId>
-			<artifactId>imserver-api</artifactId>
-			<version>3.9.4</version>
-			<scope>provided</scope>
-		</dependency>
-
-
 	</dependencies>
 
 
