@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin>
+    <class>org.jivesoftware.openfire.plugin.xtime.TimerPlugin</class>
+    <name>servyoutime</name>
+    <description>Deal with the Timer for servyou </description>
+    <author>servyou group</author>
+    <version>0.0.1</version>
+    <date>08/06/2012</date>
+    <url>http://www.servyou.com.cn</url>
+    <minServerVersion>3.7.0</minServerVersion>
+</plugin>

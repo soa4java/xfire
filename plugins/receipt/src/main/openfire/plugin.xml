@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin>
+    <class>com.servyou.openfire.plugin.receipt.ReceiptPlugin</class>
+    <name>receipt</name>
+    <description>Deal with the Message Receipt </description>
+    <author>servyou group</author>
+    <version>0.0.1</version>
+    <date>11/04/2015</date>
+    <url>http://www.servyou.com.cn</url>
+    <minServerVersion>3.7.0</minServerVersion>
+     <adminconsole>
+		  <tab id="receipt" name="${receipt.tab}" url="jsp/receipts.jsp">
+				<sidebar id="receipt-sidebar-1" name="${receipt.tab}">
+					<item id="receipt-msgMap" name="${receipt.tab}"
+						  url="jsp/receipts.jsp"/>
+				</sidebar>
+		   </tab>
+	</adminconsole>
+</plugin>

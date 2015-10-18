@@ -16,7 +16,7 @@ public class XExecutor {
 		groupChatExecutor = newFixedThreadPool(nThreadGroupChatExecutor, groupChatExecutorPrefix);
 	}
 
-	ThreadPoolExecutor newFixedThreadPool(int nThread, String prefix) {
+	public static ThreadPoolExecutor newFixedThreadPool(int nThread, String prefix) {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(nThread, nThread, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
 		XThreadFactory threadFactory = new XThreadFactory();

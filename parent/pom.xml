@@ -1152,6 +1152,12 @@
 
 			<dependency>
 				<groupId>net.yanrc.web</groupId>
+				<artifactId>contacts-module-service</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.yanrc.web</groupId>
 				<artifactId>groupchat-module-service</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
@@ -1804,6 +1810,11 @@
 		</dependency>
 
 		<!-- dubbo service start -->
+		
+		<dependency>
+				<groupId>net.yanrc.web</groupId>
+				<artifactId>contacts-module-service</artifactId>
+			</dependency>
 
 		<dependency>
 			<groupId>net.yanrc.web</groupId>

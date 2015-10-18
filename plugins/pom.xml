@@ -10,8 +10,13 @@
 
 	<modules>
 		<module>auth</module>
-                <module>presence</module>
-                <module>groupchat</module>
+		<module>presence</module>
+		<module>groupchat</module>
+		<module>time</module>
+		<module>receipt</module>
+		<module>recentcontacts</module>
+		<module>hazelcast</module>
+		
 	</modules>
 
 	<properties>

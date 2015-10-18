@@ -102,6 +102,12 @@ public abstract class StanzaHandler {
     }
 
     public void process(String stanza, XMPPPacketReader reader) throws Exception {
+    	//ugly design,ts IQ better
+    	boolean isTest = stanza.startsWith("<ts/>");
+        if (isTest) {
+            connection.deliverRawText("<ts/>");
+            return;
+        }
 
         boolean initialStream = stanza.startsWith("<stream:stream") || stanza.startsWith("<flash:stream");
         if (!sessionCreated || initialStream) {
