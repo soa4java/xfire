@@ -71,5 +71,8 @@
   <connectionProvider> 
     <className>org.jivesoftware.database.DefaultConnectionProvider</className> 
   </connectionProvider>  
-  <setup>true</setup> 
+  <setup>true</setup>
+    <clustering>
+        <enabled>true</enabled>
+    </clustering>
 </jive>
