@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jivesoftware.of.common.constants.XConstants;
-import org.jivesoftware.of.common.domain.DomainNodeJid;
+import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.utils.JidUtil;
 import org.jivesoftware.openfire.PacketRouter;
 import org.jivesoftware.openfire.SessionManager;
@@ -25,7 +25,6 @@ import org.xmpp.packet.Presence;
 /**
  * 跨域通信包中继器
  *
- * @author Administrator
  *
  */
 public class DomainNodeJidPacketDuplicator {
@@ -106,7 +105,7 @@ public class DomainNodeJidPacketDuplicator {
 			return;
 		}
 
-		DomainNodeJid domainInfo = DomainNodeJidCacheUtils.get(to.getNode());
+		UserTicket domainInfo = DomainNodeJidCacheUtils.get(to.getNode());
 		if (null != domainInfo) {
 			message.setTo(new JID(to.getNode(), domainInfo.getDm(), null, true));
 		}

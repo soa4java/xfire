@@ -1,0 +1,28 @@
+<iq id='v1' to='stpeter@jabber.org/roundabout' type='result'>
+	<vCard xmlns="vcard-temp">
+		<FN>yanrc</FN>
+		<NICKNAME>晏日成</NICKNAME>
+		<SEX>male</SEX>
+		<ORG>
+			<ORGUNIT>总公司->信息部</ORGUNIT>
+		</ORG>
+		<TITLE>软件工程师</TITLE>
+		<EMAIL>
+			<USERID>yanrc@servyou.com</USERID>
+		</EMAIL>
+		<TEL>
+			<NUMBER>8838918</NUMBER>
+		</TEL>
+		<MOBILE>13805795814</MOBILE>
+		<ADR>
+			<PCODE>310012</PCODE>
+			<LOCALITY>505</LOCALITY>
+		</ADR>
+		<PHOTO>
+			<TYPE>image/png</TYPE>
+			<BINVAL>
+				Base64EncodedBinary
+			</BINVAL>
+		</PHOTO>
+	</vCard>
+</iq>

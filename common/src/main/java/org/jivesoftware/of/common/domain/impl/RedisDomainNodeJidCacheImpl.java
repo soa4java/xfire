@@ -1,6 +1,5 @@
 package org.jivesoftware.of.common.domain.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -13,12 +12,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jivesoftware.of.common.constants.XConstants;
-import org.jivesoftware.of.common.domain.DomainNodeJid;
 import org.jivesoftware.of.common.domain.DomainNodeJidCache;
-import org.jivesoftware.of.common.enums.JidResourceEnum;
+import org.jivesoftware.of.common.domain.UserTicket;
+import org.jivesoftware.of.common.enums.Resource;
 import org.jivesoftware.of.common.spring.SpringContextHolder;
-import org.jivesoftware.of.common.utils.ConfigUtils;
-import org.jivesoftware.util.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -56,7 +53,7 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, DomainNodeJid> multiFetchDomain(Collection<Object> personIds) {
+	public Map<String, UserTicket> multiFetchDomain(Collection<Object> personIds) {
 		if (CollectionUtils.isEmpty(personIds)) {
 			return Maps.newHashMap();
 		}
@@ -67,23 +64,23 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 			}
 			List<String> list = (List<String>) obj;
 
-			Map<String, DomainNodeJid> crossDomainInfoMap = Maps.newHashMap();
+			Map<String, UserTicket> crossDomainInfoMap = Maps.newHashMap();
 			for (String string : list) {
 				if (StringUtils.isBlank(string)) {
 					continue;
 				}
 				Map<String, String> domainInfoMap = JsonUtils.toMap(string);
 				//判断看有没有用pc登录过
-				Map<JidResourceEnum, DomainNodeJid> paramMap = Maps.newHashMap();
+				Map<Resource, UserTicket> paramMap = Maps.newHashMap();
 				for (Entry<String, String> entry : domainInfoMap.entrySet()) {
-					paramMap.put(JidResourceEnum.fromValue(entry.getKey()),
-							JsonUtils.toBean(entry.getValue(), DomainNodeJid.class));
+					paramMap.put(Resource.fromCode(entry.getKey()),
+							JsonUtils.toBean(entry.getValue(), UserTicket.class));
 				}
 
-				List<DomainNodeJid> crossDomainMap = Lists.newArrayList();
+				List<UserTicket> crossDomainMap = Lists.newArrayList();
 				crossDomainMap.addAll(paramMap.values());
 				Collections.sort(crossDomainMap);
-				DomainNodeJid crossDomainInfo = crossDomainMap.get(crossDomainMap.size() - 1);
+				UserTicket crossDomainInfo = crossDomainMap.get(crossDomainMap.size() - 1);
 
 				if (crossDomainInfo != null) {
 					crossDomainInfoMap.put(crossDomainInfo.getPid(), crossDomainInfo);
@@ -97,7 +94,7 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 	}
 
 	@Override
-	public Map<String, Map<JidResourceEnum, DomainNodeJid>> multiGetDomain(Collection<Object> personIds) {
+	public Map<String, Map<Resource, UserTicket>> multiGetDomain(Collection<Object> personIds) {
 		if (CollectionUtils.isEmpty(personIds)) {
 			return Maps.newHashMap();
 		}
@@ -107,20 +104,20 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 				return Maps.newHashMap();
 			}
 			List<String> list = (List<String>) obj;
-			Map<String, Map<JidResourceEnum, DomainNodeJid>> crossDomainInfoMapMap = Maps.newHashMap();
+			Map<String, Map<Resource, UserTicket>> crossDomainInfoMapMap = Maps.newHashMap();
 			for (String string : list) {
 				if (StringUtils.isBlank(string)) {
 					continue;
 				}
-				Map<JidResourceEnum, DomainNodeJid> crossDomainInfoMap = Maps.newHashMap();
+				Map<Resource, UserTicket> crossDomainInfoMap = Maps.newHashMap();
 				String personId = null;
 				for (Map.Entry<String, String> entry : ((Map<String, String>) JsonUtils.toMap(string)).entrySet()) {
 					if (StringUtils.isBlank(entry.getKey()) || StringUtils.isBlank(entry.getValue())) {
 						continue;
 					}
-					JidResourceEnum jidResource = JidResourceEnum.fromValue(entry.getKey());
+					Resource jidResource = Resource.fromCode(entry.getKey());
 					if (jidResource != null) {
-						DomainNodeJid crossDomainInfo = JsonUtils.toBean(entry.getValue(), DomainNodeJid.class);
+						UserTicket crossDomainInfo = JsonUtils.toBean(entry.getValue(), UserTicket.class);
 						// redis.multiGet()有点坑，personId 只能从里面找了...如果redis.multiGet()返回Map就好了...
 						if (StringUtils.isBlank(personId) && crossDomainInfo != null
 								&& StringUtils.isNotBlank(crossDomainInfo.getPid())) {
@@ -145,19 +142,19 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 	}
 
 	@Override
-	public Map<String, Map<JidResourceEnum, DomainNodeJid>> getAllDomain() {
+	public Map<String, Map<Resource, UserTicket>> getAllDomain() {
 		try {
 			Object object = getAll();
 			Map<String, String> map = (Map<String, String>) object;
 			if (MapUtils.isEmpty(map)) {
 				return Maps.newHashMap();
 			}
-			Map<String, Map<JidResourceEnum, DomainNodeJid>> crossDomainInfoMapMap = Maps.newHashMap();
+			Map<String, Map<Resource, UserTicket>> crossDomainInfoMapMap = Maps.newHashMap();
 			for (Map.Entry<String, String> entry : map.entrySet()) {
 				if (StringUtils.isBlank(entry.getKey()) || StringUtils.isBlank(entry.getValue())) {
 					continue;
 				}
-				Map<JidResourceEnum, DomainNodeJid> crossDomainInfoMap = Maps.newHashMap();
+				Map<Resource, UserTicket> crossDomainInfoMap = Maps.newHashMap();
 				Map<String, String> valueMap = JsonUtils.toMap(entry.getValue());
 				if (valueMap == null) {
 					continue;
@@ -166,9 +163,9 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 					if (StringUtils.isBlank(entry1.getKey()) || StringUtils.isBlank(entry1.getValue())) {
 						continue;
 					}
-					JidResourceEnum jidResource = JidResourceEnum.fromValue(entry1.getKey());
+					Resource jidResource = Resource.fromCode(entry1.getKey());
 					if (jidResource != null) {
-						crossDomainInfoMap.put(jidResource, JsonUtils.toBean(entry1.getValue(), DomainNodeJid.class));
+						crossDomainInfoMap.put(jidResource, JsonUtils.toBean(entry1.getValue(), UserTicket.class));
 					}
 				}
 				crossDomainInfoMapMap.put(entry.getKey(), crossDomainInfoMap);
@@ -185,7 +182,7 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 	}
 
 	@Override
-	public Map<JidResourceEnum, DomainNodeJid> getDomain(String personId) {
+	public Map<Resource, UserTicket> getDomain(String personId) {
 		if (StringUtils.isBlank(personId)) {
 			return Maps.newHashMap();
 		}
@@ -203,10 +200,10 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 				return Collections.emptyMap();
 			}
 
-			Map<JidResourceEnum, DomainNodeJid> domainInfoMap = Maps.newHashMap();
+			Map<Resource, UserTicket> domainInfoMap = Maps.newHashMap();
 			for (Map.Entry<String, String> entry : map.entrySet()) {
-				domainInfoMap.put(JidResourceEnum.fromValue(entry.getKey()),
-						JsonUtils.toBean(entry.getValue(), DomainNodeJid.class));
+				domainInfoMap.put(Resource.fromCode(entry.getKey()),
+						JsonUtils.toBean(entry.getValue(), UserTicket.class));
 			}
 			return domainInfoMap;
 		} catch (Throwable t) {
@@ -221,7 +218,7 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void putDomain(DomainNodeJid crossDomainInfo) {
+	public void putDomain(UserTicket crossDomainInfo) {
 		try {
 			if (StringUtils.isNotBlank(crossDomainInfo.getPid())) {
 				Object obj = get(crossDomainInfo.getPid());
@@ -246,10 +243,10 @@ public class RedisDomainNodeJidCacheImpl extends AbstractDomainNodeJidCache impl
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void putAllDomain(List<DomainNodeJid> crossDomainInfoList) {
+	public void putAllDomain(List<UserTicket> crossDomainInfoList) {
 		try {
 			Map<String, String> jsonMap = Maps.newHashMap();
-			for (DomainNodeJid crossDomainInfo : crossDomainInfoList) {
+			for (UserTicket crossDomainInfo : crossDomainInfoList) {
 				if (StringUtils.isNotBlank(crossDomainInfo.getPid())) {
 					// 这里为需要获取用户原有的跨域信息，会频繁调用redis，可能会对redis造成压力
 					Object obj = get(crossDomainInfo.getPid());

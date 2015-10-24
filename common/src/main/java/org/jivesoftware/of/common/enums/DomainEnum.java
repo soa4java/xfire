@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jivesoftware.util.JiveGlobals;
 
 public enum DomainEnum {
-	SERVYOU("im", "im"), SERVYOU3("im3", "im3"), DEFAULT(JiveGlobals.getProperty("xmpp.domain", "im").toLowerCase(), JiveGlobals.getProperty("xmpp.domain", "im").toLowerCase());
+	SERVYOU("servyou", "servyou"), SERVYOU3("servyou3", "servyou3"), DEFAULT(JiveGlobals.getProperty("xmpp.domain", "servyou").toLowerCase(), JiveGlobals.getProperty("xmpp.domain", "servyou").toLowerCase());
 
 	DomainEnum(String text, String value) {
 		this.text = text;

@@ -33,17 +33,18 @@
    <dubbo:registry protocol="zookeeper" address="192.168.150.83:2181" />
  
     <!-- consumer -->
-    <dubbo:reference id="recentContactsApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.contacts.biz.service.RecentContactsApi">
+    <dubbo:reference id="recentContactsApi" group="social" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.contacts.biz.service.RecentContactsApi">
     	<dubbo:method name="saveContactsAndMesageDigest" async="true" />
     </dubbo:reference>
     
-    <dubbo:reference id="memberApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.MemberApi"/>
-    <dubbo:reference id="groupApi" group="chat" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.GroupApi"/>
+    <dubbo:reference id="memberApi" group="social" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.MemberApi"/>
+    <dubbo:reference id="groupApi" group="social" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.GroupApi"/>
     
-    <dubbo:reference id="userApi" interface="net.yanrc.web.xweb.uic.api.UserApi" />
+    <dubbo:reference id="userApi" version="1.0.0" group="uic" timeout="30000"  interface="net.yanrc.web.xweb.uic.api.UserApi" />
     
-    <dubbo:reference id="presenceApi" interface="net.yanrc.web.xweb.presence.api.PresenceApi">
-   		 <dubbo:method name="putPresence" async="true" />
+    <dubbo:reference id="presenceSubscriptionApi" version="1.0.0" group="social" timeout="30000" interface="net.yanrc.web.xweb.presence.api.PresenceSubscriptionApi">
+   		 <dubbo:method name="publishUserTicket" async="true" />
+   		 <dubbo:method name="activeSubscriptionRelation" async="true" />  
     </dubbo:reference>
     
     <bean id="springContextHolder" class="org.jivesoftware.of.common.spring.SpringContextHolder" />

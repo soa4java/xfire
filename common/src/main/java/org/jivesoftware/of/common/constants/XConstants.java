@@ -56,4 +56,58 @@ public class XConstants {
     
     
     public final static String REDIS_TEMPLATE="redisTemplate";
+    
+    
+    /**
+     * 咨询聊天消息
+     */
+    public final static String EC_CHAT = "http://www.servyou.com.cn/protocol/ec#session/chat";
+
+    /**
+     * 创建咨询会话消息
+     */
+    public final static String EC_CREATE_FOR_CONSULT = "http://www.servyou.com.cn/protocol/ec#session/created-for-consult";
+
+    /**
+     * 创建咨询会话消息
+     */
+    public final static String EC_CREATE_FOR_AGENT = "http://www.servyou.com.cn/protocol/ec#session/created-for-agent";
+
+    /**
+     * 咨询消息中的文件消息
+     */
+    public final static String EC_FILE = "http://www.servyou.com.cn/protocol/ec#session/file";
+
+    /**
+     * 咨询关闭请求
+     */
+    public final static String EC_REQ_CLOSE = "http://www.servyou.com.cn/protocol/ec#session/request-close";
+
+    /**
+     * 会话关闭
+     */
+    public final static String EC_SESSION_CLOSE = "http://www.servyou.com.cn/protocol/ec#session/close";
+
+    /**
+     * 咨询转接
+     */
+    public final static String EC_SWITCH_CREATE_FOR_CONSULT = "http://www.servyou.com.cn/protocol/ec#session#switch/created-for-consult";
+
+    /**
+     * 咨询转接
+     */
+    public final static String EC_SWITCH_CREATE_FOR_AGENT = "http://www.servyou.com.cn/protocol/ec#session#switch/created-for-agent";
+    
+  //请求分子公司在线成员状态,就是取租户下的所有用户
+    public static final String GET_PRESENCE_BY_ORG_ID = "http://www.servyou.com.cn/protocol/internalroster#getpresence";
+    //请求部门在线成员状态
+    public static final String GET_PRESENCE_BY_DEP_ID = "http://www.servyou.com.cn/protocol/internalroster#getpresencebydep";
+    //按个人请求在线成员状态
+    public static final String GET_PRESENCE_BY_JIDS = "http://www.servyou.com.cn/protocol/internalroster#getpresencebyjid";
+    public static final String INTERNALROSTER_FETCH = "http://www.servyou.com.cn/protocol/internalroster#fetch";
+    public static final String INTERNALROSTER_QUERYBRANCHLIST = "http://www.servyou.com.cn/protocol/internalroster#querybranchlist";
+    public static final String PROTOCOL_DISCO_INFO = "http://jabber.org/protocol/disco#info";
+    public static final String INTERNALROSTER_GETONLINECOUNT = "http://www.sevyou.com.cn/protocol/internalroster#getonlinecount";
+
+
 }

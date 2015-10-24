@@ -1,5 +1,5 @@
 <plugin>
-    <class>sitong.thinker.of.plugin.groupchat.GroupChatPlugin</class>
+    <class>org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.GroupChatPlugin</class>
     <name>groupchat</name>
     <description>groupchat </description>
     <author>servyou group chat</author>

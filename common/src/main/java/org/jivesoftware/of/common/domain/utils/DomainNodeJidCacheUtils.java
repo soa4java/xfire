@@ -11,14 +11,14 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jivesoftware.of.common.constants.XConstants;
-import org.jivesoftware.of.common.domain.DomainNodeJid;
 import org.jivesoftware.of.common.domain.DomainNodeJidCache;
-import org.jivesoftware.of.common.domain.impl.RedisDomainNodeJidCacheImpl;
+import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.domain.impl.LocalDomainNodeJidCache;
+import org.jivesoftware.of.common.domain.impl.RedisDomainNodeJidCacheImpl;
 import org.jivesoftware.of.common.enums.DomainEnum;
-import org.jivesoftware.of.common.enums.JidResourceEnum;
 import org.jivesoftware.of.common.enums.NetStatusEnum;
-import org.jivesoftware.of.common.enums.StateEnum;
+import org.jivesoftware.of.common.enums.PresenceStatus;
+import org.jivesoftware.of.common.enums.Resource;
 import org.jivesoftware.of.common.enums.ShowStatusEnum;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.util.JiveGlobals;
@@ -31,8 +31,6 @@ import com.google.common.collect.Maps;
 
 /**
  * 跨域信息工具方法
- *
- * @author fujw
  *
  */
 public class DomainNodeJidCacheUtils {
@@ -47,7 +45,7 @@ public class DomainNodeJidCacheUtils {
 	 * @param presence
 	 */
 	public static void update(Presence presence) {
-		DomainNodeJid crossDomainInfo = getCrossDomainInfoByPresence(presence);
+		UserTicket crossDomainInfo = generateUserTicket(presence);
 		LocalDomainNodeJidCache.getInstance().putDomain(crossDomainInfo);
 
 		// 如果是被转发的服务器，则不必更新到共享缓存
@@ -60,8 +58,8 @@ public class DomainNodeJidCacheUtils {
 		}
 	}
 
-	public static Map<String, DomainNodeJid> multiFetch(Collection<Object> personIds) {
-		Map<String, DomainNodeJid> crossDomainInfoMap = localCrossDomainInfoCache.multiFetchDomain(personIds);
+	public static Map<String, UserTicket> multiFetch(Collection<Object> personIds) {
+		Map<String, UserTicket> crossDomainInfoMap = localCrossDomainInfoCache.multiFetchDomain(personIds);
 		if (MapUtils.isEmpty(crossDomainInfoMap)) {
 			crossDomainInfoMap = redisCrossDomainInfoCache.multiFetchDomain(personIds);
 		}
@@ -69,21 +67,21 @@ public class DomainNodeJidCacheUtils {
 		for (Object object : personIds) {
 			String personId = (String) object;
 			if (StringUtils.isNotBlank(personId) && crossDomainInfoMap.get(personId) == null) {
-				DomainNodeJid crossDomainInfo = generateDefaultCrossDomainInfo(personId);
+				UserTicket crossDomainInfo = generateDefaultCrossDomainInfo(personId);
 				crossDomainInfoMap.put(personId, crossDomainInfo);
 			}
 		}
 		return crossDomainInfoMap;
 	}
 
-	private static DomainNodeJid generateDefaultCrossDomainInfo(String personId) {
-		return new DomainNodeJid(personId, DomainEnum.DEFAULT.getValue(), JidResourceEnum.PC.getValue(),
-				StateEnum.INVAL.code(), ShowStatusEnum.EMPTY.getValue(), NetStatusEnum.PC.getValue(),
-				JiveGlobals.getProperty(XConstants.HEART_BEAT_NODE_ID_KEY), System.currentTimeMillis());
+	private static UserTicket generateDefaultCrossDomainInfo(String personId) {
+		return new UserTicket(personId, DomainEnum.DEFAULT.getValue(), Resource.PC.getCode(),
+				PresenceStatus.INVAL.code(), ShowStatusEnum.EMPTY.getValue(), NetStatusEnum.PC.getValue(),
+				JiveGlobals.getProperty(XConstants.HEART_BEAT_NODE_ID_KEY), System.currentTimeMillis(), "");
 	}
 
-	public static Map<String, Map<JidResourceEnum, DomainNodeJid>> multiGet(Collection<Object> personIds) {
-		Map<String, Map<JidResourceEnum, DomainNodeJid>> crossDomainInfoMapMap = localCrossDomainInfoCache
+	public static Map<String, Map<Resource, UserTicket>> multiGet(Collection<Object> personIds) {
+		Map<String, Map<Resource, UserTicket>> crossDomainInfoMapMap = localCrossDomainInfoCache
 				.multiGetDomain(personIds);
 		if (MapUtils.isEmpty(crossDomainInfoMapMap)) {
 			crossDomainInfoMapMap = redisCrossDomainInfoCache.multiGetDomain(personIds);
@@ -91,13 +89,13 @@ public class DomainNodeJidCacheUtils {
 		// 有些用户的跨域信息可能拿不到，就生成默认的跨域信息
 		for (Object object : personIds) {
 			String personId = (String) object;
-			Map<JidResourceEnum, DomainNodeJid> crossDomainInfoMap = crossDomainInfoMapMap.get(personId);
+			Map<Resource, UserTicket> crossDomainInfoMap = crossDomainInfoMapMap.get(personId);
 			if (StringUtils.isNotBlank(personId) && MapUtils.isEmpty(crossDomainInfoMap)) {
-				DomainNodeJid crossDomainInfo = generateDefaultCrossDomainInfo(personId);
+				UserTicket crossDomainInfo = generateDefaultCrossDomainInfo(personId);
 				if (crossDomainInfoMap == null) {
 					crossDomainInfoMap = Maps.newHashMap();
 				}
-				crossDomainInfoMap.put(JidResourceEnum.PC, crossDomainInfo);
+				crossDomainInfoMap.put(Resource.PC, crossDomainInfo);
 				crossDomainInfoMapMap.put(personId, crossDomainInfoMap);
 			}
 		}
@@ -110,8 +108,8 @@ public class DomainNodeJidCacheUtils {
 	 * @param jidResource
 	 * @return
 	 */
-	public static DomainNodeJid get(String personId, JidResourceEnum jidResource) {
-		Map<JidResourceEnum, DomainNodeJid> crossDomainInfoMap = localCrossDomainInfoCache.getDomain(personId);
+	public static UserTicket get(String personId, Resource jidResource) {
+		Map<Resource, UserTicket> crossDomainInfoMap = localCrossDomainInfoCache.getDomain(personId);
 		if (MapUtils.isEmpty(crossDomainInfoMap)) {
 			crossDomainInfoMap = redisCrossDomainInfoCache.getDomain(personId);
 		}
@@ -120,10 +118,10 @@ public class DomainNodeJidCacheUtils {
 			return generateDefaultCrossDomainInfo(personId);
 		}
 		if (jidResource == null) {
-			jidResource = JidResourceEnum.PC;
+			jidResource = Resource.PC;
 		}
 
-		DomainNodeJid crossDomainInfo = crossDomainInfoMap.get(jidResource);
+		UserTicket crossDomainInfo = crossDomainInfoMap.get(jidResource);
 		if (crossDomainInfo == null) {//如果不是pc就取第一个
 			crossDomainInfo = crossDomainInfoMap.values().iterator().next();
 		}
@@ -136,8 +134,8 @@ public class DomainNodeJidCacheUtils {
 	 * @param personId
 	 * @return
 	 */
-	public static DomainNodeJid get(String personId) {
-		Map<JidResourceEnum, DomainNodeJid> crossDomainInfoMap = localCrossDomainInfoCache.getDomain(personId);
+	public static UserTicket get(String personId) {
+		Map<Resource, UserTicket> crossDomainInfoMap = localCrossDomainInfoCache.getDomain(personId);
 		if (MapUtils.isEmpty(crossDomainInfoMap)) {
 			crossDomainInfoMap = redisCrossDomainInfoCache.getDomain(personId);
 		}
@@ -146,9 +144,9 @@ public class DomainNodeJidCacheUtils {
 			return generateDefaultCrossDomainInfo(personId);
 		}
 
-		List<DomainNodeJid> crossDomainInfoList = Lists.newArrayList();
+		List<UserTicket> crossDomainInfoList = Lists.newArrayList();
 		crossDomainInfoList.addAll(crossDomainInfoMap.values());
-		DomainNodeJid crossDomainInfo;
+		UserTicket crossDomainInfo;
 
 		if (crossDomainInfoList.size() == 1) {
 			crossDomainInfo = crossDomainInfoList.get(0);
@@ -165,7 +163,7 @@ public class DomainNodeJidCacheUtils {
 		return crossDomainInfo;
 	}
 
-	public static DomainNodeJid getCrossDomainInfoByPresence(Presence presence) {
+	public static UserTicket generateUserTicket(Presence presence) {
 		JID jid = presence.getFrom();
 		String netstatus = null;
 		Element netstatusEle = presence.getElement().element("netstatus");
@@ -177,10 +175,10 @@ public class DomainNodeJidCacheUtils {
 		Presence.Show pshow = presence.getShow();
 		String status = getStatus(presence);
 		String show = (null != pshow ? pshow.name() : ShowStatusEnum.EMPTY.getValue());
-		JidResourceEnum resource = JidResourceEnum.fromValue(jid.getResource());
-		return new DomainNodeJid(jid.getNode(), jid.getDomain(), resource == null ? JidResourceEnum.PC.getValue()
-				: resource.getValue(), status, show, netstatus,
-				JiveGlobals.getProperty(XConstants.HEART_BEAT_NODE_ID_KEY), System.currentTimeMillis());
+		Resource resource = Resource.fromCode(jid.getResource());
+		return new UserTicket(jid.getNode(), jid.getDomain(), resource == null ? Resource.PC.getCode()
+				: resource.getCode(), status, show, netstatus,
+				JiveGlobals.getProperty(XConstants.HEART_BEAT_NODE_ID_KEY), System.currentTimeMillis(), "");
 	}
 
 	/**
@@ -194,8 +192,8 @@ public class DomainNodeJidCacheUtils {
 		}
 		//手机端只有在线、不在线，根据type属性判断
 		if (presence.isAvailable()) {
-			return StateEnum.AVAIL.code();
+			return PresenceStatus.AVAIL.code();
 		}
-		return StateEnum.INVAL.code();
+		return PresenceStatus.INVAL.code();
 	}
 }

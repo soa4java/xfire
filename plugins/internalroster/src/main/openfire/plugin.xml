@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Plugin configuration for the broadcast plugin.
+-->
+<plugin>
+    <class>org.jivesoftware.openfire.plugin.xroster.internal.InternalRosterPlugin</class>
+    <name>internalroster</name>
+    <description>Deal with the internal workers of companys </description>
+    <author>servyou group</author>
+    <version>0.0.1</version>
+    <date>08/07/2012</date>
+    <url>http://www.servyou.com.cn</url>
+    <minServerVersion>3.7.0</minServerVersion>
+    <adminconsole>		
+      
+    </adminconsole>
+</plugin>

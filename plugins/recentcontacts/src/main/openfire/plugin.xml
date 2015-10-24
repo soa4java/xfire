@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin>
-  <class>com.servyou.openfire.plugin.contacts.RecentContactsPlugin</class>
+  <class>org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.contacts.RecentContactsPlugin</class>
   <name>${pom.name}</name>
   <description>${pom.description}</description>
   <author>${pom.organization.name}</author>

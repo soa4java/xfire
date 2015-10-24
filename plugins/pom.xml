@@ -16,6 +16,9 @@
 		<module>receipt</module>
 		<module>recentcontacts</module>
 		<module>hazelcast</module>
+		<module>fileserver</module>	
+		<module>internalroster</module>
+		<module>externalcontact</module>	
 		
 	</modules>
 

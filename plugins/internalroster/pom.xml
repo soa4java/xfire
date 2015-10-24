@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jivesoftware.openfire</groupId>
+		<artifactId>xfire-plugin-all</artifactId>
+		<version>3.10.3</version>
+	</parent>
+
+	<groupId>org.jivesoftware.openfire</groupId>
+	<artifactId>xfire-plugin-internalroster</artifactId>
+	<name>internalroster</name>
+	<version>3.10.3</version>
+	<packaging>jar</packaging>
+	<description>internalroster</description>
+	<organization>
+		<name>yanrcicheng@163.com</name>
+	</organization>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.reucon.maven.plugins</groupId>
+				<artifactId>maven-openfire-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jivesoftware.openfire</groupId>
+			<artifactId>xfire-openfire</artifactId>
+			<version>3.10.3</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jivesoftware.openfire</groupId>
+			<artifactId>xfire-common</artifactId>
+			<version>3.10.3</version>
+			<scope>provided</scope>
+		</dependency>
+		
+	</dependencies>
+
+
+
+</project>

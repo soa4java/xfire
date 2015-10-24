@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <class>org.jivesoftware.openfire.plugin.xroster.extcontacts.ExtContactPlugin</class>
+    <name>externalcontact</name>
+    <description>externalcontact</description>
+    <author>yanrc</author>
+    <version>0.0.1</version>
+    <date>08/07/2012</date>
+    <url></url>
+    <minServerVersion>3.7.0</minServerVersion>
+</plugin>
