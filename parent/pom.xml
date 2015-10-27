@@ -1158,7 +1158,7 @@
 
 			<dependency>
 				<groupId>net.yanrc.web</groupId>
-				<artifactId>groupchat-module-service</artifactId>
+				<artifactId>groupchat-module-api</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 
@@ -1818,7 +1818,7 @@
 
 		<dependency>
 			<groupId>net.yanrc.web</groupId>
-			<artifactId>groupchat-module-service</artifactId>
+			<artifactId>groupchat-module-api</artifactId>
 		</dependency>
 
 		<dependency>

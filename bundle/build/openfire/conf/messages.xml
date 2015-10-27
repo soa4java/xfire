@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<messages>
+	<message code="80365621">
+		<content>系统异常，消息广播失败。</content>
+	</message>
+	
+	<message code="80365622">
+		<content>您没有广播的权限，请联系管理员。</content>
+	</message>
+	
+	<message code="80365541">
+		<content>获取权限失败。</content>
+	</message>
+</messages>

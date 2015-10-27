@@ -37,8 +37,7 @@
     	<dubbo:method name="saveContactsAndMesageDigest" async="true" />
     </dubbo:reference>
     
-    <dubbo:reference id="memberApi" group="social" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.MemberApi"/>
-    <dubbo:reference id="groupApi" group="social" version="1.0.0" timeout="30000" interface="net.yanrc.web.xweb.groupchat.biz.service.GroupApi"/>
+    <dubbo:reference id="groupChatApi" group="social" version="1.0.0" timeout="30000"  interface="net.yanrc.web.xweb.groupchat.biz.api.GroupChatApi" />
     
     <dubbo:reference id="userApi" version="1.0.0" group="uic" timeout="30000"  interface="net.yanrc.web.xweb.uic.api.UserApi" />
     

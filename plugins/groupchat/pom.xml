@@ -49,7 +49,7 @@
 
 		<dependency>
 			<groupId>net.yanrc.web</groupId>
-			<artifactId>groupchat-module-service</artifactId>
+			<artifactId>groupchat-module-api</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
@@ -60,9 +60,6 @@
 			<version>3.10.3</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- <dependency> <groupId>sitong.thinker.imserver</groupId> <artifactId>imserver-web-api</artifactId> 
-			<version>3.9.4</version> <scope>provided</scope> </dependency> -->
 
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>

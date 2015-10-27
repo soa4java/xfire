@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<module code="1">
+		<message code="00000000" text="请求成功" />
+		<message code="80365500" text="组不存在" />
+		<message code="80365501" text="由于系统异常，退出聊天组失败。" />
+		<message code="80365502" text="由于系统异常，请求聊天组成员失败。" />
+		<message code="80365503" text="由于系统异常，添加成员失败。" />
+		<message code="80365504" text="由于系统异常，组是否存在请求失败。" />
+
+		<message code="80365510" text="创建组失败。" />
+		<message code="80365511" text="组已经存在。" />
+		<message code="80365512" text="受邀请的成员列表不能为空。" />
+		<message code="80365513" text="组信息设置失败。" />
+		<message code="80365514" text="获取组信息失败。" />
+		<message code="80365515" text="获取%s插件失败" />
+		<message code="80365516" text="获取%s服务失败" />
+		
+		<message code="80365517" text="讨论组不能转临时组" />
+		<message code="80365518" text="组成员jid格式非法" />
+		<message code="80365519" text="临时组不能转讨论组" />
+		
+		<message code="80365526" text="获取%s的token失败" />
+		
+		<message code="80365530" text="personIds, tenantId, token参数都不能为空." />
+		<message code="80365532" text="tenantId, token, ecid, groupId, curPos, from,to 参数都不能为空." />
+		<message code="80365536" text="咨询人%s不在线" />
+		<message code="80365537" text="坐席%s不在线" />
+		<message code="80365540" text="tenantId, token, ecid, groupId, toAndCurPos, from  参数都不能为空." />
+		<message code="80365542" text="tenantId, token, from ,  to , errorCode , errorText  参数都不能为空." />
+		
+		<message code="80365544" text="tenantId, token, from ,  ecId , ecSid , groupId , consult , agent  参数都不能为空." />
+		
+		<message code="80365550" text="广播参数都不能为空" />
+
+		<message code="80365551" text="输入参数错误:%s." />
+
+		<message code="80365590" text="服务异常" />
+	</module>
+
+</root>
+

@@ -8,19 +8,19 @@ import java.util.Map;
 import java.util.Set;
 
 import net.yanrc.app.common.result.Result;
-import net.yanrc.web.xweb.groupchat.biz.service.GroupApi;
-import net.yanrc.web.xweb.groupchat.biz.service.MemberApi;
+import net.yanrc.web.xweb.groupchat.biz.api.GroupChatApi;
 import net.yanrc.web.xweb.groupchat.domain.Group;
+import net.yanrc.web.xweb.groupchat.domain.GroupInfo;
 import net.yanrc.web.xweb.groupchat.domain.GroupKey;
-import net.yanrc.web.xweb.groupchat.domain.Member;
 import net.yanrc.web.xweb.groupchat.dto.GroupDTO;
+import net.yanrc.web.xweb.groupchat.dto.GroupKeyDTO;
+import net.yanrc.web.xweb.groupchat.dto.MemberDTO;
 import net.yanrc.web.xweb.groupchat.query.GroupsGetQuery;
 import net.yanrc.web.xweb.groupchat.query.MembersGetQuery;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.jivesoftware.of.common.constants.XConstants;
 import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.error.ErrorCodeEnumOfGrobal;
 import org.jivesoftware.of.common.error.XmppErrorMessageUtils;
@@ -32,8 +32,12 @@ import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.component.GroupChatComponent;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.GroupCatEnum;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.GroupTypeEnum;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.MemberAffiliationEnum;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.MemberRoleEnum;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.ProtocolEnum;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.UserAttrEnum;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.helper.GroupChatCrossDomainHelper;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,23 +46,16 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.PacketError;
 
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.GroupTypeEnum;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.MemberRoleEnum;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.enums.UserAttrEnum;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.groupchat.helper.GroupChatCrossDomainHelper;
-
 public class IQProcessor extends AbstractProcessor {
 
 	private static XMPPServer server = XMPPServer.getInstance();
 	private static IQProcessor instance = new IQProcessor();
-	private final Logger LOG = LoggerFactory.getLogger(XConstants.LOG_GROUPCHAT);
+	private final Logger LOG = LoggerFactory.getLogger(IQProcessor.class);
 
-	private MemberApi memberApiConsumer;
-	private GroupApi groupApiConsumer;
+	private GroupChatApi groupChatApiConsumer;
 
 	private IQProcessor() {
-		memberApiConsumer = SpringContextHolder.getBean("memberApi", MemberApi.class);
-		groupApiConsumer = SpringContextHolder.getBean("groupApi", GroupApi.class);
+		groupChatApiConsumer = SpringContextHolder.getBean(GroupChatApi.class);
 	}
 
 	public static IQProcessor getInstance() {
@@ -110,21 +107,37 @@ public class IQProcessor extends AbstractProcessor {
 
 		String tenantId = SessionUtils.getTopGroupId(fromJID);
 		String groupId = groupBareJID.getNode();
+
+		Result<Group> result = groupChatApiConsumer.getGroupByPrimaryKey(new GroupKeyDTO(groupId, tenantId));
 		//已经存在该房间，不需要新建
-		if (groupApiConsumer.getByPrimaryKey(new GroupKey(groupId, tenantId)) != null) {
+		if (result.isSuccess() || result.getModel() != null) {
 			return;
 		}
 
 		String groupName = getEletentText(replyChildEle.element("groupName"));
-		String temporary = getEletentText(replyChildEle.element("temporary"));
+		if (StringUtils.isBlank((groupName))) {
+			groupName = groupId;
+		}
+
+		String groupNick = getEletentText(replyChildEle.element("nick"));
+		if (StringUtils.isBlank((groupNick))) {
+			groupNick = groupId;
+		}
+
+		String groupType = getEletentText(replyChildEle.element("temporary"));
+		if (StringUtils.isBlank((groupType))) {
+			groupType = GroupTypeEnum.TEMPORARY.getValue();
+		}
 
 		Date now = new Date();
-		Group group = new Group(groupId, groupId, temporary, "1", now, now, 2000);
+
+		GroupDTO group = new GroupDTO(tenantId, groupId, groupName, groupNick, groupType, "1", now, now, 2000);
 
 		String userJid = fromJID.getNode();
-		Member owner = new Member(tenantId, userJid, userJid, groupId, groupName, groupName, "admin", now, now, "owner");
+		MemberDTO owner = new MemberDTO(tenantId, userJid, userJid, groupId, groupName, groupNick, "admin", now, now,
+				"owner");
 
-		if (groupApiConsumer.add(group, owner).isSuccess()) {
+		if (groupChatApiConsumer.createGroupThenAddOwner(group, owner).isSuccess()) {
 			appendItem(replyChildEle, fromJID.toFullJID(), owner.getAffiliationCode(), owner.getRoleCode());
 		} else {
 			String errorCode = ErrorCodeEnumOfGrobal.CREATE_GROUP_FAIL.code();
@@ -189,7 +202,7 @@ public class IQProcessor extends AbstractProcessor {
 		//        GroupMemberOffMsgCountClearer.getInstance().removeOfflineMsgCount(req.getFrom().getNode(), groupId);
 
 		String tenantId = SessionUtils.getTopGroupId(req.getFrom());
-		Result<Set<String>> result = memberApiConsumer.remove(new GroupKey(groupId, tenantId), memberId);
+		Result<Set<String>> result = groupChatApiConsumer.removeMemberId(new GroupKey(groupId, tenantId), memberId);
 
 		if (result != null && result.isSuccess()) {
 			Set<String> members = result.getModel();
@@ -322,31 +335,31 @@ public class IQProcessor extends AbstractProcessor {
 		final String groupId = req.getTo().getNode();
 		final String tenantId = SessionUtils.getTopGroupId(req.getFrom());
 
-		Result<Group> result = groupApiConsumer.getByPrimaryKey(new GroupKey(groupId, tenantId));
+		// 原始组成员
+		Result<GroupInfo> result = groupChatApiConsumer.queryMemberIds(new MembersGetQuery(groupId, tenantId));
+
 		// 如果组已经删除
-		if (result == null || result.getModel() == null) {
+		if (!result.isSuccess() && result.getMessage().getCode().endsWith("401")) {
 			errorCode = ErrorCodeEnumOfGrobal.GROUP_NOT_EXISTS.code();
 			String errorText = XmppErrorMessageUtils.getErrorText(errorCode);
 			res.setChildElement(XmppErrorMessageUtils.appendErrorChildToIQ(req, res, errorCode, errorText));
 			return;
 		}
 
-		Group chatGroup = result.getModel();
-
-		// 原始组成员
-		Set<String> originalGroupMemberIds = memberApiConsumer.queryMemberIds(new MembersGetQuery(groupId, tenantId))
-				.getModel();
+		GroupInfo groupInfo = result.getModel();
+		Group group = groupInfo.getGroup();
+		Set<String> originalGroupMemberIds = groupInfo.getMemberIds();
 
 		// 组中不存在的人员才会被添加。
 		Set<Object> toBeInvitedMemberIds = getPidsByJids(toBeInvitedMemberJids);
-		Set<String> allGroupMemberIds = memberApiConsumer.add(new GroupKey(groupId, tenantId), null,
+		Set<String> allGroupMemberIds = groupChatApiConsumer.addMemberToGroup(new GroupKey(groupId, tenantId), null,
 				Set.class.cast(toBeInvitedMemberIds)).getModel();
 		Set<String> allGroupMemberJids = getJidsByPids(allGroupMemberIds);
 		Set<String> finalAdedMemberJids = toBeInvitedMemberJids;//默认认为被邀请的人都被加入了，暂时这样处理
 
 		// 有成员被成功添加，才会广播新成员被加入。
-		String groupName = chatGroup.getName();
-		String groupCat = GroupTypeEnum.PERSIATENT.getValue().equals(chatGroup.getType()) ? GroupCatEnum.DISCUSS_GROUP
+		String groupName = group.getName();
+		String groupCat = GroupTypeEnum.PERSIATENT.getValue().equals(group.getType()) ? GroupCatEnum.DISCUSS_GROUP
 				.getValue() : GroupCatEnum.TEMP.getValue();
 
 		//TODO 通知订阅服务有新成员加入组
@@ -505,7 +518,7 @@ public class IQProcessor extends AbstractProcessor {
 
 		String groupId = req.getTo().getNode();
 		String tenantId = SessionUtils.getTopGroupId(req.getFrom());
-		Result<Group> result = groupApiConsumer.getByPrimaryKey(new GroupKey(groupId, tenantId));
+		Result<Group> result = groupChatApiConsumer.getGroupByPrimaryKey(new GroupKeyDTO(groupId, tenantId));
 		Element statusEle = res.getChildElement().addElement("isExist");
 		if (result != null && result.getModel() != null) {
 			Group group = result.getModel();
@@ -540,7 +553,7 @@ public class IQProcessor extends AbstractProcessor {
 
 		// 如果组已经删除
 		String tenantId = SessionUtils.getTopGroupId(req.getFrom());
-		Group group = groupApiConsumer.getByPrimaryKey(new GroupKey(groupId, tenantId)).getModel();
+		Group group = groupChatApiConsumer.getGroupByPrimaryKey(new GroupKeyDTO(groupId, tenantId)).getModel();
 		if (null == group) {
 			String errorCode = ErrorCodeEnumOfGrobal.GROUP_NOT_EXISTS.code();
 			String errorText = XmppErrorMessageUtils.getErrorText(errorCode);
@@ -549,7 +562,7 @@ public class IQProcessor extends AbstractProcessor {
 		} else {
 			//禁止讨论组转临时组
 			if (GroupTypeEnum.PERSIATENT.getValue().equals(group.getType())/*数据库中为持久组*/
-					&& temporary.equals("1") /*请求中为要求变为临时组*/) {
+					&& isTemporaryGroup(temporary)/*请求中为要求变为临时组*/) {
 				String errorCode = ErrorCodeEnumOfGrobal.PERSISTENCE_TO_TEMP.code();
 				String errorText = XmppErrorMessageUtils.getErrorText(errorCode);
 				XmppErrorMessageUtils.appendErrorChildToIQ(req, res, errorCode, errorText);
@@ -558,20 +571,29 @@ public class IQProcessor extends AbstractProcessor {
 				return;
 			}
 		}
-		// 组信息设置失败
+
 		GroupDTO groupDTO = new GroupDTO();
 		groupDTO.setName(groupName);
-		groupDTO.setType(temporary);
+		groupDTO.setNickName(groupName);
+		if (isTemporaryGroup(temporary)) {
+			groupDTO.setType(GroupTypeEnum.TEMPORARY.getValue());
+		} else {
+			groupDTO.setType(GroupTypeEnum.PERSIATENT.getValue());
+		}
 
-		Result<Integer> editCount = groupApiConsumer.editByPrimaryKeySelective(new GroupKey(groupId, tenantId),
-				groupDTO);
+		Result<Boolean> result = groupChatApiConsumer.editGroupByPrimaryKeySelective(
+				new GroupKeyDTO(groupId, tenantId), groupDTO);
 
-		if (editCount == null || editCount.getModel() == null || editCount.getModel().intValue() == 0) {
+		if (result == null || result.getModel() == null || !result.getModel()) {
 			String errorCode = ErrorCodeEnumOfGrobal.GROUP_UPDATE_FAIL.code();
 			String errorText = XmppErrorMessageUtils.getErrorText(errorCode);
 			res.setChildElement(XmppErrorMessageUtils.appendErrorChildToIQ(req, res, errorCode, errorText));
 			return;
 		}
+	}
+
+	private boolean isTemporaryGroup(String temporary) {
+		return temporary.equals("1");
 	}
 
 	/**
@@ -591,29 +613,28 @@ public class IQProcessor extends AbstractProcessor {
 		String tenantId = SessionUtils.getTopGroupId(req.getFrom());
 		Element replyChildEle = res.getChildElement();
 
-		if (groupApiConsumer.getByPrimaryKey(new GroupKey(groupId, tenantId)).getModel() == null) {
+		Result<GroupInfo> result = groupChatApiConsumer.queryMemberIds(new MembersGetQuery(groupId, tenantId));
+
+		if (result == null && !result.isSuccess()) {
 			String errorCode = ErrorCodeEnumOfGrobal.GROUP_NOT_EXISTS.code();
 			String errorText = XmppErrorMessageUtils.getErrorText(errorCode);
 			XmppErrorMessageUtils.appendErrorChildToIQ(req, res, errorCode, errorText);
 			return;
 		}
 
-		Result<Set<String>> result = memberApiConsumer.queryMemberIds(new MembersGetQuery(groupId, tenantId));
-		if (result != null && result.isSuccess()) {
-			Set<String> groupMemberIds = result.getModel();
-			if (CollectionUtils.isNotEmpty(groupMemberIds)) {
-				for (String memberId : groupMemberIds) {
-					try {
-						Element itemEle = replyChildEle.addElement("item");
-						itemEle.addAttribute("jid", memberId);
-						itemEle.addAttribute("name", memberId);
-						itemEle.addAttribute("affiliation", MemberAffiliationEnum.OUTCAST.getValue());
-						itemEle.addAttribute("role", MemberRoleEnum.PARTICIPANT.getValue());
-						itemEle.addAttribute("presence", "");
-					} catch (Throwable t) {
-						LOG.error("getSpecifiedGroupMembers() error!", t);
-						continue;
-					}
+		Set<String> groupMemberIds = result.getModel().getMemberIds();
+		if (CollectionUtils.isNotEmpty(groupMemberIds)) {
+			for (String memberId : groupMemberIds) {
+				try {
+					Element itemEle = replyChildEle.addElement("item");
+					itemEle.addAttribute("jid", memberId);
+					itemEle.addAttribute("name", memberId);
+					itemEle.addAttribute("affiliation", MemberAffiliationEnum.OUTCAST.getValue());
+					itemEle.addAttribute("role", MemberRoleEnum.PARTICIPANT.getValue());
+					itemEle.addAttribute("presence", "");
+				} catch (Throwable t) {
+					LOG.error("getSpecifiedGroupMembers() error!", t);
+					continue;
 				}
 			}
 		}
@@ -654,8 +675,8 @@ public class IQProcessor extends AbstractProcessor {
 
 		Element replyChildEle = res.getChildElement();
 		String tenantId = SessionUtils.getTopGroupId(req.getFrom());
-		Result<List<Group>> reulst = groupApiConsumer.query(new GroupsGetQuery(tenantId, new JID(userJid).getNode(),
-				groupType));
+		Result<List<Group>> reulst = groupChatApiConsumer.queryGroups(new GroupsGetQuery(tenantId, new JID(userJid)
+				.getNode(), groupType));
 		List<Group> chatGroups = null;
 
 		if (reulst == null || !reulst.isSuccess() || CollectionUtils.isEmpty(reulst.getModel())) {

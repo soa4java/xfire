@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import net.yanrc.app.common.result.Result;
 import net.yanrc.app.common.util.UUIDGenerator;
 import net.yanrc.web.xweb.contacts.biz.service.RecentContactsApi;
-import net.yanrc.web.xweb.groupchat.biz.service.MemberApi;
+import net.yanrc.web.xweb.groupchat.biz.api.GroupChatApi;
+import net.yanrc.web.xweb.groupchat.domain.GroupInfo;
 import net.yanrc.web.xweb.groupchat.query.MembersGetQuery;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -28,16 +30,16 @@ import org.xmpp.packet.Message;
 import org.xmpp.packet.PacketExtension;
 
 public class MessageProcessor extends AbstractProcessor {
-	static MessageProcessor instance = new MessageProcessor();
-	final Logger LOG = LoggerFactory.getLogger(XConstants.LOG_GROUPCHAT);
-	XMPPServer server = XMPPServer.getInstance();
-	String localDomain = server.getServerInfo().getXMPPDomain();
-	MemberApi memberApiConsumer;
-	RecentContactsApi recentContactsApi;
+	private static MessageProcessor instance = new MessageProcessor();
+	private final Logger LOG = LoggerFactory.getLogger(MessageProcessor.class);
+	private XMPPServer server = XMPPServer.getInstance();
+	private String localDomain = server.getServerInfo().getXMPPDomain();
+	private GroupChatApi groupChatApi;
+	private RecentContactsApi recentContactsApiConsumer;
 
 	private MessageProcessor() {
-		memberApiConsumer = SpringContextHolder.getBean("memberApi", MemberApi.class);
-		recentContactsApi = SpringContextHolder.getBean("recentContactsApi", RecentContactsApi.class);
+		groupChatApi = SpringContextHolder.getBean(GroupChatApi.class);
+		recentContactsApiConsumer = SpringContextHolder.getBean(RecentContactsApi.class);
 	}
 
 	public static MessageProcessor getInstance() {
@@ -61,10 +63,17 @@ public class MessageProcessor extends AbstractProcessor {
 		JID groupJID = message.getTo().asBareJID();
 		String groupId = groupJID.getNode();
 		String tenantId = SessionUtils.getTopGroupId(fromJID);
-		final Set<String> memberIds = memberApiConsumer.queryMemberIds(new MembersGetQuery(groupId, tenantId))
-				.getModel();
-		Map<String, UserTicket> pidMapInOtherDomain = GroupChatCrossDomainHelper
-				.getPidAndDomainMapInOther(memberIds);
+
+		Result<GroupInfo> result = groupChatApi.queryMemberIds(new MembersGetQuery(groupId, tenantId));
+
+		if (!result.isSuccess()) {
+			LOG.error("group not exists when broadcastMsgToAllGroupMember:{}", message.toXML());
+			return;
+		}
+
+		final Set<String> memberIds = result.getModel().getMemberIds();
+
+		Map<String, UserTicket> pidMapInOtherDomain = GroupChatCrossDomainHelper.getPidAndDomainMapInOther(memberIds);
 		String mySelfPid = fromJID.getNode();
 
 		for (String pid : memberIds) {
@@ -110,7 +119,7 @@ public class MessageProcessor extends AbstractProcessor {
 			}
 
 			//所有组成员的最近联系人都有这个组
-			recentContactsApi.saveContactsAndMesageDigest(true, groupId, memberIds, message.toXML());
+			recentContactsApiConsumer.saveContactsAndMesageDigest(true, groupId, memberIds, message.toXML());
 
 		} catch (Throwable t) {
 			LOG.error("cacheRecentContacts error! msg:{}", message.toXML(), t);
