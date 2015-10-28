@@ -26,24 +26,16 @@ public class InterRosterPresenceEventListener implements PresenceEventListener {
 	}
 
 	@Override
-	public void availableSession(ClientSession session, final Presence presence) {
-		
+	public void availableSession(ClientSession session, Presence presence) {
+
 		session.setMessageCarbonsEnabled(true);
-		
-		//激活订阅关系
-		if (presence.getFrom() != null) {
-			String tenantId = SessionUtils.getTopGroupId(presence.getFrom());
-			String personId = presence.getFrom().getNode();
-			String resource = presence.getFrom().getResource();
-			presenceSubscriptionApi.activeSubscriptionRelation(tenantId, personId, resource);
-		}
+
+		avaiableSubscriptionRelation(true, session, presence);
 	}
-	
+
 	@Override
 	public void unavailableSession(ClientSession session, Presence presence) {
-		if (presence.getFrom() != null) {
-			presenceSubscriptionApi.publishUserTicket(UserTickets.newUserTicket(presence));
-		}
+		avaiableSubscriptionRelation(false, session, presence);
 	}
 
 	@Override
@@ -52,13 +44,36 @@ public class InterRosterPresenceEventListener implements PresenceEventListener {
 			return;
 		}
 
-		JID recipientJID = presence.getTo();
+		doPresenceBroadcastIfNecessary(presence, session);
+	}
+
+	private void avaiableSubscriptionRelation(boolean actived, ClientSession session, Presence presence) {
+		if (presence.getFrom() == null) {
+			return;
+		}
+		String tenantId = SessionUtils.getTopGroupId(presence.getFrom());
+		String personId = presence.getFrom().getNode();
+		String resource = presence.getFrom().getResource();
+		if (actived) {
+			presenceSubscriptionApi.activeSubscriptionRelationThenPublishUserTicket(tenantId, personId, resource,
+					UserTickets.newUserTicket(presence));
+		} else {
+			presenceSubscriptionApi.inactiveSubscriptionRelationThenPublishUserTicket(tenantId, personId, resource,
+					UserTickets.newUserTicket(presence));
+		}
+		PresenceBroadcasts.broadCastPresence(presence.createCopy(), presence);
+	}
+
+	private void doPresenceBroadcastIfNecessary(Presence presence, ClientSession session) {
+
 		JID from = presence.getFrom();
 		if (from == null) {
 			return;
 		}
 
+		JID recipientJID = presence.getTo();
 		Presence copy = presence.createCopy();
+
 		if (session != null) {
 			if (Resource.isMobile(presence.getFrom().getResource())) {
 				Collection<ClientSession> sessions = SessionManager.getInstance().getSessions(

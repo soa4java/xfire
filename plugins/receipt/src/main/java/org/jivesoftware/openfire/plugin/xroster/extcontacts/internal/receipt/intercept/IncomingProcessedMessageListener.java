@@ -6,6 +6,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jivesoftware.of.common.constants.XConstants;
+import org.jivesoftware.of.common.message.Messages;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.interceptor.PacketInterceptor;
@@ -82,7 +83,7 @@ public class IncomingProcessedMessageListener implements PacketInterceptor {
 
 				//根据接受方版本判断，是否需要将消息放入队列，如果接收方多个终端在线，只有一个终端回复了就ok
 				if (!ReceiptMsgUtils.isSendToGroup(msg) && xmppServer.isLocal(toJID)
-						&& ReceiptVersions.versionMatch(toJID)) {
+						&& ReceiptVersions.versionMatch(toJID) && !(Messages.isControlMessage(msg))) {
 
 					if (toClientSess instanceof ClientSession) {
 						ClientSession toClientSession = (ClientSession) toClientSess;
