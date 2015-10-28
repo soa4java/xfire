@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener;
+package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jivesoftware.of.common.thread.XExecutor;
@@ -24,7 +24,7 @@ public class PresenceEventListenerForReceipt implements PresenceEventListener {
 	@Override
 	public void unavailableSession(ClientSession session, Presence presence) {
 		MessageQueueWaitingReceipt queue = MessageQueueMap.remove(session);
-		if (CollectionUtils.isNotEmpty(queue))
+		if (CollectionUtils.isNotEmpty(queue)){
 			for (final Message msg : queue) {
 				XExecutor.globalExecutor.submit(new Runnable() {
 					@Override
@@ -33,6 +33,7 @@ public class PresenceEventListenerForReceipt implements PresenceEventListener {
 					}
 				});
 			}
+		}
 	}
 
 	@Override

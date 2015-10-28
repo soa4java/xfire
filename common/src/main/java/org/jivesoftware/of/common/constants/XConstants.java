@@ -15,6 +15,8 @@ public class XConstants {
     public final static String LOG_STANZA = "stanzaLogger";
 
     public final static String TOP_GROUP_ID = "topGroupId";
+    public final static String RECEIPT_ENABLE= "receiptEnable";
+    
     
     /**
      * 消息已读命名空间

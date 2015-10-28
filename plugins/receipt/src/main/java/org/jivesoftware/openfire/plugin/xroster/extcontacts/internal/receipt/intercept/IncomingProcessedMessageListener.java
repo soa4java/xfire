@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener;
+package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept;
 
 import java.util.Collection;
 
@@ -6,32 +6,45 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jivesoftware.of.common.constants.XConstants;
-import org.jivesoftware.of.common.enums.Resource;
-import org.jivesoftware.of.common.message.MessageListener;
-import org.jivesoftware.of.common.version.Versions;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
+import org.jivesoftware.openfire.interceptor.PacketInterceptor;
+import org.jivesoftware.openfire.interceptor.PacketRejectedException;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.ReceiptsProps;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueMap;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueWaitingReceipt;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.ReceiptMsgUtils;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.ReceiptVersion;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.ReceiptVersions;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.openfire.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
+import org.xmpp.packet.Packet;
 
-public class IncomingProcessedMessageListener implements MessageListener {
+public class IncomingProcessedMessageListener implements PacketInterceptor {
 
 	static Logger logger = LoggerFactory.getLogger(IncomingProcessedMessageListener.class);
 
 	static XMPPServer xmppServer = XMPPServer.getInstance();
 
 	@Override
-	public void process(Message msg, Session session, boolean incoming, boolean processed) {
+	public void interceptPacket(Packet packet, Session session, boolean incoming, boolean processed)
+			throws PacketRejectedException {
+
 		if (incoming && processed) {
+
+			if (!(packet instanceof Message)) {
+				return;
+			}
+
+			Message msg = (Message) packet;
+
+			if (Message.Type.normal == msg.getType() || StringUtils.isBlank(msg.getType().toString())) {
+				return;
+			}
+
 			if (!(session instanceof ClientSession)) {
 				return;
 			}
@@ -39,11 +52,6 @@ public class IncomingProcessedMessageListener implements MessageListener {
 			if (!ReceiptMsgUtils.isNeedReceipt(msg) || ReceiptMsgUtils.isOfflineMsg(msg)
 					|| StringUtils.isNotBlank(ReceiptMsgUtils.getMsgIdFromClientReceiptMsg(msg))) {
 				return;
-			}
-
-			//根据发送方的版本判断，是否需要给发送方回执
-			if (xmppServer.isLocal(msg.getFrom()) && versionMatch(msg.getFrom())) {
-				sendSrvReceipt(msg, session);
 			}
 
 			String resource = null;
@@ -73,7 +81,8 @@ public class IncomingProcessedMessageListener implements MessageListener {
 				}
 
 				//根据接受方版本判断，是否需要将消息放入队列，如果接收方多个终端在线，只有一个终端回复了就ok
-				if (!ReceiptMsgUtils.isSendToGroup(msg) && xmppServer.isLocal(toJID) && versionMatch(toJID)) {
+				if (!ReceiptMsgUtils.isSendToGroup(msg) && xmppServer.isLocal(toJID)
+						&& ReceiptVersions.versionMatch(toJID)) {
 
 					if (toClientSess instanceof ClientSession) {
 						ClientSession toClientSession = (ClientSession) toClientSess;
@@ -87,24 +96,6 @@ public class IncomingProcessedMessageListener implements MessageListener {
 			}
 
 		}
-	}
-
-	private boolean versionMatch(JID fullJID) {
-		String resource = fullJID.getResource();
-		if (StringUtils.isBlank(resource)) {
-			return false;
-		}
-
-		if (StringUtils.equals(Resource.PC.getCode(), resource)) {
-			return Versions.currentVersionIsGreatThan(fullJID, ReceiptVersion.pcVersion);
-		}
-
-		return Versions.currentVersionIsGreatThan(fullJID, ReceiptVersion.appVersion);
-	}
-
-	private void sendSrvReceipt(Message msg, Session session) {
-		Message receiptMessage = ReceiptMsgUtils.createMsgReceipt(msg);
-		session.deliverRawText(receiptMessage.toXML());
 	}
 
 }

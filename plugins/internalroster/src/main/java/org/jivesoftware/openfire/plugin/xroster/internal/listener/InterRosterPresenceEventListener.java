@@ -27,6 +27,9 @@ public class InterRosterPresenceEventListener implements PresenceEventListener {
 
 	@Override
 	public void availableSession(ClientSession session, final Presence presence) {
+		
+		session.setMessageCarbonsEnabled(true);
+		
 		//激活订阅关系
 		if (presence.getFrom() != null) {
 			String tenantId = SessionUtils.getTopGroupId(presence.getFrom());

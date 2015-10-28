@@ -21,6 +21,25 @@ public class SessionUtils {
 		return topGroupId;
 	}
 
+	public static void receiptEnable(Session session, Boolean enabled) {
+		if (session != null && session instanceof LocalClientSession) {
+			LocalClientSession sess = (LocalClientSession) session;
+			sess.setSessionData(XConstants.RECEIPT_ENABLE, enabled);
+		}
+	}
+
+	public static boolean receiptEnabled(Session session) {
+		boolean enabled = false;
+		if (session != null && session instanceof LocalClientSession) {
+			LocalClientSession sess = (LocalClientSession) session;
+			Object obj = sess.getSessionData(XConstants.RECEIPT_ENABLE);
+			if (obj != null) {
+				enabled = Boolean.parseBoolean(obj.toString());
+			}
+		}
+		return enabled;
+	}
+
 	public static void setTopGroupId(Session session, String topGroupId) {
 		if (session != null && session instanceof LocalClientSession) {
 			LocalClientSession sess = (LocalClientSession) session;

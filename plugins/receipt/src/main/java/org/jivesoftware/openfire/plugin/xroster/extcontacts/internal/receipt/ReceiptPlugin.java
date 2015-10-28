@@ -3,7 +3,6 @@ package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt;
 import java.io.File;
 import java.util.Map;
 
-import org.jivesoftware.of.common.message.MessageWatcher;
 import org.jivesoftware.of.common.service.RestService;
 import org.jivesoftware.openfire.IQRouter;
 import org.jivesoftware.openfire.OfflineMessageStrategy;
@@ -11,10 +10,13 @@ import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.interceptor.InterceptorManager;
+import org.jivesoftware.openfire.interceptor.PacketInterceptor;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.handler.IQVersionHandler;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener.IncomingProcessedMessageListener;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener.IncomingUnProcessedMessageListener;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener.OfflineMessageListenerForReceipt;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept.IncomingProcessedMessageListener;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept.IncomingUnProcessedMessageListener;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept.OfflineMessageListenerForReceipt;
+import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener.ReceiptPresenceEventListener;
+import org.jivesoftware.openfire.user.PresenceEventDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +39,19 @@ public class ReceiptPlugin implements Plugin {
 	IncomingProcessedMessageListener incomingProcessedMsgListener = new IncomingProcessedMessageListener();
 	IncomingUnProcessedMessageListener incomingUnProcessedMsgListener = new IncomingUnProcessedMessageListener();
 
+	PacketInterceptor incomingProcessedMessageListener = new IncomingProcessedMessageListener();
+	PacketInterceptor incomingUnProcessedMessageListener = new IncomingUnProcessedMessageListener(); 
+	
+	ReceiptPresenceEventListener receiptPresenceEventListener =new ReceiptPresenceEventListener();
+	
 	@Override
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
 		OfflineMessageStrategy.addListener(receiptOfflineMessageListener);
 		
-		MessageWatcher.addMessageListener(incomingProcessedMsgListener);
-		MessageWatcher.addMessageListener(incomingUnProcessedMsgListener);
+		PresenceEventDispatcher.addListener(receiptPresenceEventListener);
+		
+		InterceptorManager.getInstance().addInterceptor(incomingProcessedMsgListener);
+		InterceptorManager.getInstance().addInterceptor(incomingUnProcessedMessageListener);
 
 		iqRouter.addHandler(iqVersionHandler);
 		
@@ -59,8 +68,10 @@ public class ReceiptPlugin implements Plugin {
 	public void destroyPlugin() {
 		OfflineMessageStrategy.removeListener(receiptOfflineMessageListener);
 		
-		MessageWatcher.removeMessageListener(incomingProcessedMsgListener);
-		MessageWatcher.removeMessageListener(incomingUnProcessedMsgListener);
+		PresenceEventDispatcher.removeListener(receiptPresenceEventListener);
+		
+		InterceptorManager.getInstance().removeInterceptor(incomingProcessedMsgListener);
+		InterceptorManager.getInstance().removeInterceptor(incomingUnProcessedMessageListener);
 		
 		iqRouter.removeHandler(iqVersionHandler);
 		

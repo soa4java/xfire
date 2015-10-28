@@ -14,8 +14,8 @@ public abstract class ReceiptsProps {
 	private static final String KEY_MSG_ENQUEUE_LOG_ENABLE = "msg.enqueue.log.enable";
 	private final static String KEY_MSG_RESENT_INTERVAL_SECENDS = "message.resent.internal.seconds";
 	private final static String KEY_MSG_SENT_NUM_OF_TIMES = "message.sent.num.of.times";
-	/** 默认间隔5s重发一次 */
-	private final static long VALUE_DEFAULT_INTERNAL_SENONDS = 5L;
+	/** 默认间隔30s重发一次 */
+	private final static long VALUE_DEFAULT_INTERNAL_SENONDS = 30L;
 	/** 默认重发1次*/
 	private final static int VALUE_DEFAULT_RESENT_NUM = 1;
 

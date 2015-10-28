@@ -20,6 +20,7 @@
 
 package org.jivesoftware.openfire.spi;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.jivesoftware.openfire.*;
@@ -561,7 +562,7 @@ public class RoutingTableImpl extends BasicModule implements RoutingTable, Clust
 
         if (highestPrioritySessions.size() == 1) {
             // Found only one session so deliver message (if it hasn't already been processed because it has message carbons enabled)
-            if (!shouldCarbonCopyToResource(highestPrioritySessions.get(0), packet, isPrivate)) {
+            if (!shouldCarbonCopyToResource(highestPrioritySessions.get(0), packet, isPrivate) && !isControlMessage(packet)) {
                 highestPrioritySessions.get(0).process(packet);
             }
         }
@@ -639,7 +640,14 @@ public class RoutingTableImpl extends BasicModule implements RoutingTable, Clust
     }
 
     private boolean shouldCarbonCopyToResource(ClientSession session, Message message, boolean isPrivate) {
-        return !isPrivate && session.isMessageCarbonsEnabled() && message.getType() == Message.Type.chat;
+        return !isPrivate && session.isMessageCarbonsEnabled() && (message.getType() == Message.Type.chat ||  message.getType() == Message.Type.groupchat);
+    }
+    
+    public  boolean isControlMessage(Message message){
+    	if(message.getType() == Message.Type.normal ||  message.getType()==null || StringUtils.isBlank(message.getType().toString())){
+    		return true;
+    	}
+    	return false;
     }
 
     /**

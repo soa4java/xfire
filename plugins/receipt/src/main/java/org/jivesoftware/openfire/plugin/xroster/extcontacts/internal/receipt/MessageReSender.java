@@ -40,13 +40,20 @@ public class MessageReSender {
 							for (ClientSession session : localClientSessions) {
 								try {
 									final MessageQueueWaitingReceipt queue = MessageQueueMap.get(session);
-
+									long curTimeMillss = System.currentTimeMillis() ;
 									if (CollectionUtils.isEmpty(queue)
-											|| System.currentTimeMillis() - queue.getTimestamp() < ReceiptsProps.resentInternalMills) {
+											|| curTimeMillss - queue.getTimestamp() < ReceiptsProps.resentInternalMills) {
 										continue;
 									}
 
 									final Message msg = queue.peek();
+									
+									if(msg == null){
+										continue;
+									}
+									
+									msg.getElement().addAttribute("resent", "true");
+									
 									final ClientSession clientSession = session;
 
 									if (queue.getCount() < ReceiptsProps.sentNumOfTimes) {

@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener;
+package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept;
 
 import org.jivesoftware.openfire.OfflineMessageListener;
 import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.ReceiptConstants;
