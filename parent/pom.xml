@@ -1810,11 +1810,11 @@
 		</dependency>
 
 		<!-- dubbo service start -->
-		
+
 		<dependency>
-				<groupId>net.yanrc.web</groupId>
-				<artifactId>contacts-module-service</artifactId>
-			</dependency>
+			<groupId>net.yanrc.web</groupId>
+			<artifactId>contacts-module-service</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>net.yanrc.web</groupId>

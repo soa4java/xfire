@@ -28,4 +28,9 @@ public class OfflineMessageListenerForReceipt implements OfflineMessageListener 
 			MessageClearer.removeByFromFullJID(message);
 		}
 	}
+
+	@Override
+	public void messageDeleted(Message message) {
+		remove(message);
+	}
 }

@@ -344,13 +344,20 @@
 			<artifactId>xfire-plugin-fileserver</artifactId>
 			<version>3.10.3</version>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>org.jivesoftware.openfire</groupId>
+			<artifactId>xfire-plugin-jafka</artifactId>
+			<version>3.10.3</version>
+		</dependency>
+		
+<!-- 
 		<dependency>
 			<groupId>org.jivesoftware.openfire</groupId>
 			<artifactId>xfire-plugin-hazelcast</artifactId>
 			<version>3.10.3</version>
 		</dependency>
-
+ -->
 
 		<dependency>
 			<groupId>org.jivesoftware.openfire</groupId>

@@ -158,7 +158,16 @@ public class OfflineMessageStrategy extends BasicModule implements ServerFeature
                 break;
             case drop:
                 // Drop essentially means silently ignore/do nothing
+            	delete(message);
                 break;
+            }
+        }
+    }
+    
+    private void delete(Message message){
+    	if (!listeners.isEmpty()) {
+            for (OfflineMessageListener listener : listeners) {
+                listener.messageDeleted(message);
             }
         }
     }
