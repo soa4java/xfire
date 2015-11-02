@@ -58,7 +58,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin, OfflineMessage
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
 
 		initJafkaProductor();
-//		startMsgSendThread();
+		startMsgSendThread();
 
 		OfflineMessageStrategy.addListener(this);
 
