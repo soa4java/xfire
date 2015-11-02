@@ -37,10 +37,10 @@ public class AuthPlugin extends PluginAdaptor implements Plugin {
 		defaultAuthorizationPolicies.addAll(AuthorizationManager.getAuthorizationPolicies());
 		AuthorizationManager.getAuthorizationPolicies().clear();
 		AuthorizationManager.getAuthorizationPolicies().add(new XAuthorizationPolicy());
-
+		
 		JiveGlobals.setProperty(providerUserClassNameKey, XUserProvider.class.getName());
 		JiveGlobals.setProperty(providerAuthClassNameKey, XAuthProvider.class.getName());
-
+		
 		updateProperty(providerUserClassNameKey, defaultProviderUserClassName);
 		updateProperty(providerAuthClassNameKey, defaultProviderAuthClassname);
 

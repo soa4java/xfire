@@ -7,15 +7,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.swing.text.Document;
 
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.XMPPPacketReader;
 import org.jivesoftware.of.common.plugin.PluginAdaptor;
 import org.jivesoftware.of.common.service.RestService;
 import org.jivesoftware.openfire.OfflineMessageListener;
@@ -24,11 +19,8 @@ import org.jivesoftware.openfire.PacketRouter;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
-import org.jivesoftware.openfire.net.MXParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.Presence;
@@ -46,26 +38,13 @@ import com.sohu.jafka.utils.ImmutableMap;
 
 public class JafkaPlugin extends PluginAdaptor implements Plugin, OfflineMessageListener {
 	private static Logger logger = LoggerFactory.getLogger(JafkaPlugin.class);
-	private static String CHARSET = "UTF-8";
 	private static String topic = "0.0.0.0_msgQueue";
-	private static XmlPullParserFactory factory = null;
-
-	private static XMPPPacketReader reader = null;
 	private Thread thread;
 
 	private Producer<String, String> producer;
 	private ConsumerConnector connector;
 	private boolean flag = true;
 
-	static {
-		try {
-			factory = XmlPullParserFactory.newInstance(MXParser.class.getName(), null);
-			reader = new XMPPPacketReader();
-			reader.setXPPFactory(factory);
-		} catch (XmlPullParserException e) {
-			logger.error("Error creating a parser factory", e);
-		}
-	}
 
 	@Override
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
@@ -135,12 +114,17 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin, OfflineMessage
 		final PacketRouter packetRouter = XMPPServer.getInstance().getPacketRouter();
 		final ExecutorService executor = Executors.newFixedThreadPool(2);
 		while (flag) {
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			
 			Map<String, List<MessageStream<String>>> topicMessageStreams = connector.createMessageStreams(
 					ImmutableMap.of(topic, 2), new StringDecoder());
 			List<MessageStream<String>> streams = topicMessageStreams.get(topic);
 			//
-
-			final AtomicInteger count = new AtomicInteger();
 			for (final MessageStream<String> stream : streams) {
 				executor.submit(new Runnable() {
 					public void run() {
@@ -171,7 +155,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin, OfflineMessage
 
 							packetRouter.route(packet);
 
-							System.out.println(count.incrementAndGet() + " => " + message);
+							System.out.println("受到消息： => " + message);
 						}
 					}
 				});
@@ -201,7 +185,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin, OfflineMessage
 			producer.send(data);
 
 			long cost = System.currentTimeMillis() - start;
-			System.out.println("send 10000 message cost: " + cost + " ms");
+			System.out.println("send message cost: " + cost + " ms");
 
 			return true;
 
