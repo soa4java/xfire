@@ -18,7 +18,11 @@ public abstract class MessageClearer {
 	static SessionManager sessionManager = SessionManager.getInstance();
 
 	public static void remove(String msgId, JID toJid) {
-		MessageQueueWaitingReceipt queue = MessageQueueMap.get(sessionManager.getSession(toJid));
+		ClientSession session = sessionManager.getSession(toJid);
+		if(session == null){
+			return;
+		}
+		MessageQueueWaitingReceipt queue = MessageQueueMap.get(session);
 		remove(queue, msgId);
 	}
 
@@ -36,7 +40,13 @@ public abstract class MessageClearer {
 	}
 	
 	public static void removeByFromFullJID(Message message) {
-		MessageQueueWaitingReceipt queue = MessageQueueMap.get(sessionManager.getSession(message.getFrom()));
+		ClientSession session = sessionManager.getSession(message.getFrom());
+		
+		if(session == null){
+			return;
+		}
+		
+		MessageQueueWaitingReceipt queue = MessageQueueMap.get(session);
 		remove(queue, message.getID());
 	}
 

@@ -22,46 +22,46 @@ import com.sohu.jafka.utils.ImmutableMap;
 public class Test {
 
 	public static void main(String[] args) {
-//		new Thread(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				Properties props = new Properties();
-//				props.put("zk.connect", "192.168.150.83:2181");
-//				props.put("serializer.class", StringEncoder.class.getName());
-//				//
-//				ProducerConfig config = new ProducerConfig(props);
-//				Producer<String, String> producer = new Producer<String, String>(config);
-//				//
-//				StringProducerData data = new StringProducerData("0.0.0.0_msgQueue");
-//
-//				//
-//				try {
-//					for (int j = 0; j < 100; j++) {
-//						
-//						long start = System.currentTimeMillis();
-//						for (int i = 0; i < 10; i++) {
-//							data.add("Hello world #" + i);
-//						}
-//						
-//						producer.send(data);
-//						
-//						long cost = System.currentTimeMillis() - start;
-//						System.out.println("send 10 message cost: " + cost + " ms");
-//
-//						try {
-//							Thread.sleep(5000);
-//						} catch (InterruptedException e) {
-//							e.printStackTrace();
-//						}
-//
-//					}
-//				} finally {
-//					producer.close();
-//				}
-//
-//			}
-//		}).start();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Properties props = new Properties();
+				props.put("zk.connect", "192.168.150.83:2181");
+				props.put("serializer.class", StringEncoder.class.getName());
+				//
+				ProducerConfig config = new ProducerConfig(props);
+				Producer<String, String> producer = new Producer<String, String>(config);
+				//
+				StringProducerData data = new StringProducerData("demo");
+
+				//
+				try {
+					for (int j = 0; j < 100; j++) {
+						
+						long start = System.currentTimeMillis();
+						for (int i = 0; i < 10; i++) {
+							data.add("Hello world #" + i);
+						}
+						
+						producer.send(data);
+						
+						long cost = System.currentTimeMillis() - start;
+						System.out.println("send 10 message cost: " + cost + " ms");
+
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+					}
+				} finally {
+					producer.close();
+				}
+
+			}
+		}).start();
 
 		new Thread(new Runnable() {
 
@@ -75,8 +75,8 @@ public class Test {
 				ConsumerConnector connector = Consumer.create(consumerConfig);
 				//
 				Map<String, List<MessageStream<String>>> topicMessageStreams = connector.createMessageStreams(
-						ImmutableMap.of("0.0.0.0_msgQueue", 2), new StringDecoder());
-				List<MessageStream<String>> streams = topicMessageStreams.get("0.0.0.0_msgQueue");
+						ImmutableMap.of("demo", 2), new StringDecoder());
+				List<MessageStream<String>> streams = topicMessageStreams.get("demo");
 				//
 				ExecutorService executor = Executors.newFixedThreadPool(2);
 				final AtomicInteger count = new AtomicInteger();
