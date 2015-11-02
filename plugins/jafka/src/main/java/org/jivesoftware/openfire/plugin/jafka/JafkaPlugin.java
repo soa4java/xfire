@@ -335,6 +335,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin, OfflineMessage
 									producer.send(data);
 									long cost = System.currentTimeMillis() - start;
 									System.out.println("send message cost: " + cost + " ms:");
+									data.getData().clear();
 									continue;
 								}
 							}
