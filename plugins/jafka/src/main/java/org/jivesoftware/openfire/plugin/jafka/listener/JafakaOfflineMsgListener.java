@@ -47,6 +47,7 @@ public class JafakaOfflineMsgListener implements OfflineMessageListener {
 			ConcurrentLinkedQueue<Packet> packetQueue = map.get(node.getNodeName());
 			if (packetQueue == null) {
 				packetQueue = new ConcurrentLinkedQueue<Packet>();
+				map.put(node.getNodeName(), packetQueue);
 			}
 			packetQueue.add(packet);
 		}

@@ -214,7 +214,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 						}
 
 						for (Map.Entry<String, ConcurrentLinkedQueue<Packet>> entry : packetQueueMap.entrySet()) {
-							String topic = entry.getKey();
+							String topic = entry.getKey()+ "_msgs";;
 							StringProducerData data = new StringProducerData(topic);
 							ConcurrentLinkedQueue<Packet> queue = entry.getValue();
 							Packet packet = null;
