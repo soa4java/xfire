@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
@@ -217,6 +218,11 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 							String topic = entry.getKey()+ "_msgs";;
 							StringProducerData data = new StringProducerData(topic);
 							ConcurrentLinkedQueue<Packet> queue = entry.getValue();
+							
+							if(CollectionUtils.isEmpty(queue)){
+								continue;
+							}
+							
 							Packet packet = null;
 							while (null != (packet = queue.poll())) {
 								if (packet instanceof Message) {
@@ -237,7 +243,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 										long start = System.currentTimeMillis();
 										producer.send(data);
 										long cost = System.currentTimeMillis() - start;
-										System.out.println("send message cost: " + cost + " ms:");
+										System.out.println("send message cost: " + cost + " ms:,topic:"+topic+",count:"+data.getData().size());
 										data.getData().clear();
 										continue;
 									}
@@ -248,7 +254,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 							producer.send(data);
 							data.getData().clear();
 							long cost = System.currentTimeMillis() - start;
-							System.out.println("send message cost: " + cost + " ms:");
+							System.out.println("send message cost: " + cost + " ms:,topic:"+topic+",count:"+data.getData().size());
 						}
 
 					} catch (Exception e) {
