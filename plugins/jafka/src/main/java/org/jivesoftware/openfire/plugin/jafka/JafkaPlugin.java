@@ -69,7 +69,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 
 	private Producer<String, String> producer;
 	private ConsumerConnector connector;
-	private boolean flag = true;
+	private boolean threadEnable = true;
 
 	private NodeCache nodeCache;
 	private OfflineMessageService offlineMessageService;
@@ -93,7 +93,9 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 			System.err.println(err);
 			throw new RuntimeException(err);
 		}
-		
+
+		imNode = new ImNode(nodeName, nodeIp, System.currentTimeMillis());
+
 		nodeCache.put(imNode.getName(), imNode);
 
 		initJafkaProductor();
@@ -101,6 +103,8 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 
 		OfflineMessageStrategy.addListener(offlineMsgListener);
 		PresenceEventDispatcher.addListener(presenceEventListener);
+		
+		new Thread(new ImNodeHeartbeatRunnable(nodeCache),"#ImNodeHeartbeatThread").start();
 
 		new Thread(new Runnable() {
 
@@ -171,7 +175,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 	@Override
 	public void destroyPlugin() {
 		destroyJafkaProductor();
-		flag = false;
+		threadEnable = false;
 
 		OfflineMessageStrategy.removeListener(offlineMsgListener);
 		PresenceEventDispatcher.removeListener(presenceEventListener);
@@ -188,20 +192,19 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 	}
 
 	public void destroyJafkaProductor() {
-		
+
 		nodeCache.delete(nodeName);
-		
+
 		if (producer != null) {
 			producer.close();
 		}
 	}
 
-
 	private void startMsgSendThread() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while (flag) {
+				while (threadEnable) {
 					try {
 						long begin = System.currentTimeMillis();
 						ConcurrentHashMap<String, ConcurrentLinkedQueue<Packet>> packetQueueMap = offlineMsgListener
@@ -266,6 +269,34 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 	@Override
 	public boolean unregister() {
 		return false;
+	}
+
+	class ImNodeHeartbeatRunnable implements Runnable {
+
+		final Logger logger = LoggerFactory.getLogger(ImNodeHeartbeatRunnable.class);
+
+		NodeCache nodeCache;
+
+		public ImNodeHeartbeatRunnable(NodeCache nodeCache) {
+			this.nodeCache = nodeCache;
+		}
+
+		@Override
+		public void run() {
+			while (threadEnable) {
+				try {
+					Thread.sleep(8000);
+					String nodeName = JafkaPlugin.nodeName;
+					String nodeIp = JafkaPlugin.nodeIp;
+					ImNode imNode = new ImNode(nodeName, nodeIp, System.currentTimeMillis());
+					nodeCache.put(nodeName, imNode);
+				} catch (Exception e) {
+					logger.error("ImNodeHeartbeatRunnable error!", e);
+				}
+			}
+
+		}
+
 	}
 
 }

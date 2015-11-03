@@ -1,6 +1,5 @@
 package org.jivesoftware.openfire.plugin.jafka.service;
 
-import org.jivesoftware.openfire.plugin.jafka.cache.NodeCache;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisNodeCacheImpl;
 import org.xmpp.packet.Message;
 
