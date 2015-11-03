@@ -31,6 +31,8 @@ public class TimerPlugin implements Plugin {
         IQRouter iqRouter = server.getIQRouter();
         iqRouter.addHandler(timerHandler);
 
+        System.out.println(this.getClass().getSimpleName() +" init succeed!");
+        
         if (LOG.isInfoEnabled()) {
             LOG.info(IQTimerHandler.class.getSimpleName() + " init...");
         }
@@ -43,6 +45,8 @@ public class TimerPlugin implements Plugin {
         iqRouter.removeHandler(timerHandler);
         timerHandler = null;
 
+        System.out.println(this.getClass().getSimpleName() +" destroy succeed!");
+        
         if (LOG.isInfoEnabled()) {
             LOG.info(IQTimerHandler.class.getSimpleName() + " destroy...");
         }

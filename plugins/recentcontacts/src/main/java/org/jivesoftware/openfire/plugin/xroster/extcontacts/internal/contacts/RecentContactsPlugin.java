@@ -28,6 +28,7 @@ public class RecentContactsPlugin implements Plugin {
 
     public void destroyPlugin() {
         interceptorManager.removeInterceptor(recentContactsMsgInterceptor);
+        System.out.println(this.getClass().getSimpleName() +" destroy succeed!");
     }
 
     public Map<String, RestService> getRestServiceMap() {

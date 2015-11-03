@@ -61,6 +61,7 @@ public class FileServerPlugin implements Plugin, Component {
 		componentManager = null;
 		pluginManager = null;
 
+		System.out.println(this.getClass().getSimpleName() +" destroy succeed!");
 	}
 
 	@Override
@@ -196,7 +197,7 @@ public class FileServerPlugin implements Plugin, Component {
 	@Override
 	public void start() {
 
-		System.out.println("fileserver ok ...");
+		System.out.println(this.getClass().getSimpleName() +" start succeed!");
 	}
 
 }

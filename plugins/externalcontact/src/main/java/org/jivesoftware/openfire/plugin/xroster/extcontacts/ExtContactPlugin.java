@@ -79,6 +79,7 @@ public class ExtContactPlugin implements Plugin {
 		componentManager = null;
 
 		LOG.info(this.getClass().getSimpleName() + " destroy...");
+		System.out.println(this.getClass().getSimpleName() +" destroy succeed!");
 
 	}
 

@@ -53,6 +53,8 @@ public class AuthPlugin extends PluginAdaptor implements Plugin {
 
 		JiveGlobals.setProperty(providerUserClassNameKey, defaultProviderUserClassName);
 		JiveGlobals.setProperty(providerAuthClassNameKey, defaultProviderAuthClassname);
+		
+		System.out.println("auth destroy succeed!");
 	}
 
 	private void updateProperty(String name, String value) {

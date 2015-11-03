@@ -26,6 +26,7 @@ public class PresencePlugin extends PluginAdaptor implements Plugin {
 
 	public void destroyPlugin() {
 		interceptorManager.removeInterceptor(interceptor);
+		System.out.println(this.getClass().getSimpleName() +" destroy succeed!");
 	}
 
 

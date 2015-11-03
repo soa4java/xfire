@@ -82,6 +82,8 @@ public class InternalRosterPlugin implements Plugin {
 			if (Log.isInfoEnabled()) {
 				Log.info("InternalRosterPlugin destroy successfully...");
 			}
+			
+			System.out.println(this.getClass().getSimpleName() +" destroy succeed!");
 
 		} catch (Exception e) {
 			Log.error("InternalRosterComponent->destroyPlugin:" + e.getMessage(), e);

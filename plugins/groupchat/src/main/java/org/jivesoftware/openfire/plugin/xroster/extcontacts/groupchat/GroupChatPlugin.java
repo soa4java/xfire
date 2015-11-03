@@ -68,7 +68,7 @@ public class GroupChatPlugin implements Plugin {
 			return;
 		}
 
-		System.out.println("GroupChatPlugin destroy succeed!");
+		System.out.println(this.getClass().getSimpleName() +" destroy succeed!");
 
 		if (LOG.isInfoEnabled()) {
 			LOG.info("GroupChatPlugin destroy succeed!");

@@ -1,78 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-    This file stores bootstrap properties needed by Openfire.
-    Property names must be in the format: "prop.name.is.blah=value"
-    That will be stored as:
-        <prop>
-            <name>
-                <is>
-                    <blah>value</blah>
-                </is>
-            </name>
-        </prop>
-
-    Most properties are stored in the Openfire database. A
-    property viewer and editor is included in the admin console.
--->
+<!-- This file stores bootstrap properties needed by Openfire. Property names 
+	must be in the format: "prop.name.is.blah=value" That will be stored as: 
+	<prop> <name> <is> <blah>value</blah> </is> </name> </prop> Most properties 
+	are stored in the Openfire database. A property viewer and editor is included 
+	in the admin console. -->
 <!-- root element, all properties must be under this element -->
-<jive> 
-  <adminConsole> 
-    <!-- Disable either port by setting the value to -1 -->  
-    <port>9090</port>  
-    <securePort>9091</securePort> 
-  </adminConsole>  
-  <locale>zh_CN</locale>  
-  <!-- Network settings. By default, Openfire will bind to all network interfaces.
-      Alternatively, you can specify a specific network interfaces that the server
-      will listen on. For example, 127.0.0.1. This setting is generally only useful
-       on multi-homed servers. -->  
-  <!--
-    <network>
-        <interface></interface>
-    </network>
-    -->  
-  <!-- SPDY  Protocol is npn.
-    	(note: npn does not work with Java 8)
-    	add -Xbootclasspath/p:/OPENFIRE_HOME/lib/npn-boot.jar to .vmoptions file    -->  
-  <!--
-    <spdy>
-    	<protocol>npn</protocol>
-    </spdy>
-    -->  
-  <!-- XEP-0198 properties -->  
-  <stream> 
-    <management> 
-      <!-- Whether stream management is offered to clients by server. -->  
-      <active>true</active>  
-      <!-- Number of stanzas sent to client before a stream management
-    			 acknowledgement request is made. -->  
-      <requestFrequency>5</requestFrequency> 
-    </management> 
-  </stream>  
-  <database> 
-    <defaultProvider> 
-      <driver>com.mysql.jdbc.Driver</driver>  
-      <serverURL>jdbc:mysql://192.168.70.111:3306/of?rewriteBatchedStatements=true</serverURL>
-        <!--test/mysql-->
-     <!-- <username encrypted="true">d42e5e249ff265b1231a8379965de269f5222473c34f6f7e</username>
-      <password encrypted="true">78aeac4db075fabe65162eea962c02205f60dac8d0678fb0</password> -->
+<jive>
+	<adminConsole>
+		<!-- Disable either port by setting the value to -1 -->
+		<port>9090</port>
+		<securePort>9091</securePort>
+	</adminConsole>
+	<locale>zh_CN</locale>
+	<!-- Network settings. By default, Openfire will bind to all network interfaces. 
+		Alternatively, you can specify a specific network interfaces that the server 
+		will listen on. For example, 127.0.0.1. This setting is generally only useful 
+		on multi-homed servers. -->
+	<!-- <network> <interface></interface> </network> -->
+	<!-- SPDY Protocol is npn. (note: npn does not work with Java 8) add -Xbootclasspath/p:/OPENFIRE_HOME/lib/npn-boot.jar 
+		to .vmoptions file -->
+	<!-- <spdy> <protocol>npn</protocol> </spdy> -->
+	<!-- XEP-0198 properties -->
+	<stream>
+		<management>
+			<!-- Whether stream management is offered to clients by server. -->
+			<active>true</active>
+			<!-- Number of stanzas sent to client before a stream management acknowledgement 
+				request is made. -->
+			<requestFrequency>5</requestFrequency>
+		</management>
+	</stream>
+	<database>
+		<defaultProvider>
+			<driver>com.mysql.jdbc.Driver</driver>
+			<serverURL>jdbc:mysql://192.168.70.111:3306/of?rewriteBatchedStatements=true
+			</serverURL>
+			<!--test/mysql -->
+			<!-- <username encrypted="true">d42e5e249ff265b1231a8379965de269f5222473c34f6f7e</username> 
+				<password encrypted="true">78aeac4db075fabe65162eea962c02205f60dac8d0678fb0</password> -->
 
-        <username>root</username>
-        <password>mysql</password>
-        <testSQL>select 1</testSQL>
-      <testBeforeUse>false</testBeforeUse>  
-      <testAfterUse>false</testAfterUse>  
-      <minConnections>20</minConnections>  
-      <maxConnections>100</maxConnections>  
-      <connectionTimeout>1.0</connectionTimeout> 
-    </defaultProvider> 
-  </database>  
-  <connectionProvider> 
-    <className>org.jivesoftware.database.DefaultConnectionProvider</className> 
-  </connectionProvider>  
-  <setup>true</setup>
-    <clustering>
-        <enabled>true</enabled>
-    </clustering>
+			<username>root</username>
+			<password>mysql</password>
+			<testSQL>select 1</testSQL>
+			<testBeforeUse>false</testBeforeUse>
+			<testAfterUse>false</testAfterUse>
+			<minConnections>20</minConnections>
+			<maxConnections>100</maxConnections>
+			<connectionTimeout>1.0</connectionTimeout>
+		</defaultProvider>
+	</database>
+	<connectionProvider>
+		<className>org.jivesoftware.database.DefaultConnectionProvider
+		</className>
+	</connectionProvider>
+	<setup>true</setup>
+
+
+	<clustering>
+		<enabled>true</enabled>
+	</clustering>
+
+	<imserver>
+		<zk>
+			<connect>192.168.150.83:2181</connect>
+		</zk>
+		<node>
+			<name>im1</name>
+			<ip>192.168.70.245</ip>
+		</node>
+	</imserver>
 </jive>
