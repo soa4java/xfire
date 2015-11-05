@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jivesoftware.openfire.OfflineMessageListener;
+import org.jivesoftware.openfire.plugin.jafka.JafkaPlugin;
 import org.jivesoftware.openfire.plugin.jafka.cache.UserNodeCache;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisUserNodeCacheImpl;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageService;
@@ -41,7 +42,7 @@ public class JafakaOfflineMsgListener implements OfflineMessageListener {
 		}
 
 		for (UserNode node : userNodes) {
-			if (node.getResource().equalsIgnoreCase(fullJid.getResource())) {
+			if (node.getNodeName().equalsIgnoreCase(JafkaPlugin.nodeName)) {//在本地节点已经发送过了
 				continue;
 			}
 			ConcurrentLinkedQueue<Packet> packetQueue = map.get(node.getNodeName());

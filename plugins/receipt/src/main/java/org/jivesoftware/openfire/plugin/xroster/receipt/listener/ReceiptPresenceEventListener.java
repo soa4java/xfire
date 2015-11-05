@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener;
+package org.jivesoftware.openfire.plugin.xroster.receipt.listener;
 
 import org.jivesoftware.of.common.utils.SessionUtils;
 import org.jivesoftware.openfire.session.ClientSession;

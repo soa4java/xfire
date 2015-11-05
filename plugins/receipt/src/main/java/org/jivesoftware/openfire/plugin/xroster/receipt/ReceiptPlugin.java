@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt;
+package org.jivesoftware.openfire.plugin.xroster.receipt;
 
 import java.io.File;
 import java.util.Map;
@@ -11,11 +11,11 @@ import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.interceptor.InterceptorManager;
 import org.jivesoftware.openfire.interceptor.PacketInterceptor;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.handler.IQVersionHandler;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept.IncomingProcessedMessageListener;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept.IncomingUnProcessedMessageListener;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept.OfflineMessageListenerForReceipt;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.listener.ReceiptPresenceEventListener;
+import org.jivesoftware.openfire.plugin.xroster.receipt.handler.IQVersionHandler;
+import org.jivesoftware.openfire.plugin.xroster.receipt.intercept.IncomingProcessedMessageListener;
+import org.jivesoftware.openfire.plugin.xroster.receipt.intercept.IncomingUnProcessedMessageListener;
+import org.jivesoftware.openfire.plugin.xroster.receipt.intercept.OfflineMessageListenerForReceipt;
+import org.jivesoftware.openfire.plugin.xroster.receipt.listener.ReceiptPresenceEventListener;
 import org.jivesoftware.openfire.user.PresenceEventDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

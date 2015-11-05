@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.handler;
+package org.jivesoftware.openfire.plugin.xroster.receipt.handler;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;

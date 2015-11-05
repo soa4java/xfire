@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt;
+package org.jivesoftware.openfire.plugin.xroster.receipt;
 
 import java.util.Collection;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -8,8 +8,8 @@ import org.jivesoftware.of.common.thread.XExecutor;
 import org.jivesoftware.openfire.OfflineMessageStrategy;
 import org.jivesoftware.openfire.RoutingTable;
 import org.jivesoftware.openfire.XMPPServer;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueMap;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueWaitingReceipt;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.MessageQueueMap;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.MessageQueueWaitingReceipt;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +35,13 @@ public class MessageReSender {
 			public void run() {
 				while (true) {
 					if (enabled) {
+						
+						try {
+							Thread.sleep(ReceiptsProps.scanInternalMills);
+						} catch (InterruptedException e) {
+							LOG.error("MessageReSender thread InterruptedException!", e);
+						}
+						
 						Collection<ClientSession> localClientSessions = routingTable.getClientsRoutes(true);
 						if (CollectionUtils.isNotEmpty(localClientSessions)) {
 							for (ClientSession session : localClientSessions) {
@@ -73,12 +80,6 @@ public class MessageReSender {
 									}
 								} catch (Throwable t) {
 									LOG.error("MessageReSender thread error!", t);
-								}
-
-								try {
-									Thread.sleep(ReceiptsProps.scanInternalMills);
-								} catch (InterruptedException e) {
-									LOG.error("MessageReSender thread InterruptedException!", e);
 								}
 							}
 						}

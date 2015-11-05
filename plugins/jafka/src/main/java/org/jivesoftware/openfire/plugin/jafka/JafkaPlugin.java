@@ -1,6 +1,7 @@
 package org.jivesoftware.openfire.plugin.jafka;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -26,12 +27,13 @@ import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.plugin.jafka.cache.NodeCache;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisNodeCacheImpl;
+import org.jivesoftware.openfire.plugin.jafka.listener.InterRosterPresenceEventListener;
 import org.jivesoftware.openfire.plugin.jafka.listener.JafakaOfflineMsgListener;
-import org.jivesoftware.openfire.plugin.jafka.listener.JafkaPresenceEventListener;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageService;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageServiceImpl;
 import org.jivesoftware.openfire.plugin.jafka.vo.ImNode;
 import org.jivesoftware.openfire.user.PresenceEventDispatcher;
+import org.jivesoftware.openfire.user.PresenceEventListener;
 import org.jivesoftware.util.JiveGlobals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +55,8 @@ import com.sohu.jafka.utils.ImmutableMap;
 public class JafkaPlugin extends PluginAdaptor implements Plugin {
 	private static Logger logger = LoggerFactory.getLogger(JafkaPlugin.class);
 	private static PacketRouter packetRouter = XMPPServer.getInstance().getPacketRouter();
-	private final JafakaOfflineMsgListener offlineMsgListener = new JafakaOfflineMsgListener();
-	JafkaPresenceEventListener presenceEventListener = new JafkaPresenceEventListener();
+	private JafakaOfflineMsgListener offlineMsgListener = new JafakaOfflineMsgListener();
+	private PresenceEventListener presenceEventListener = new InterRosterPresenceEventListener();
 
 	public static String zkConnect;
 	public static String nodeName;
@@ -66,7 +68,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 		nodeIp = JiveGlobals.getXMLProperty("imserver.node.ip");
 	}
 
-	private Thread thread;
+	private static String receiveTopic = nodeName + "_msgs";
 
 	private Producer<String, String> producer;
 	private ConsumerConnector connector;
@@ -99,29 +101,86 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 
 		nodeCache.put(imNode.getName(), imNode);
 
-		initJafkaProductor();
-		startMsgSendThread();
+		new Thread(new ImNodeHeartbeatRunnable(nodeCache), "#ImNodeHeartbeatThread" + nodeName).start();
 
-		OfflineMessageStrategy.addListener(offlineMsgListener);
-		PresenceEventDispatcher.addListener(presenceEventListener);
-		
-		new Thread(new ImNodeHeartbeatRunnable(nodeCache),"#ImNodeHeartbeatThread").start();
+		initJafkaProductor();
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (threadEnable) {
+					try {
+
+						Thread.currentThread().sleep(1000);
+
+						long begin = System.currentTimeMillis();
+						ConcurrentHashMap<String, ConcurrentLinkedQueue<Packet>> packetQueueMap = offlineMsgListener.getPacketQueueMap();
+						if (MapUtils.isEmpty(packetQueueMap)) {
+							continue;
+						}
+
+						for (Map.Entry<String, ConcurrentLinkedQueue<Packet>> entry : packetQueueMap.entrySet()) {
+							String topic = entry.getKey() + "_msgs";
+							StringProducerData data = new StringProducerData(topic);
+							ConcurrentLinkedQueue<Packet> queue = entry.getValue();
+
+							if (CollectionUtils.isEmpty(queue)) {
+								continue;
+							}
+
+							Packet packet = null;
+							while (null != (packet = queue.poll())) {
+								if (packet instanceof Message) {
+									Message msg = (Message) packet;
+									if (msg.getElement().attribute("mc") != null) {
+										offlineMessageService.saveOfflineMsg(msg);
+										continue;
+									} else {
+										msg.getElement().addAttribute("mc", "1");
+									}
+
+									long end = System.currentTimeMillis();
+									long interval = end - begin;
+
+									data.add(packet.toXML());
+
+									if (data.getData().size() >= 100 || interval > 2000) {
+										long start = System.currentTimeMillis();
+										producer.send(data);
+										long cost = System.currentTimeMillis() - start;
+										System.out.println("send message cost: " + cost + " ms:,topic:" + topic
+												+ ",count:" + data.getData().size());
+										data.getData().clear();
+										continue;
+									}
+								}
+							}
+
+							long start = System.currentTimeMillis();
+							producer.send(data);
+							long cost = System.currentTimeMillis() - start;
+							System.out.println("send message cost: " + cost + " ms:,topic:" + topic + ",count:"
+									+ data.getData().size());
+							data.getData().clear();
+						}
+
+					} catch (Exception e) {
+						logger.error("send to jakfa error!", e);
+						continue;
+					}
+				}
+			}
+		}, "#msgSendThread-" + nodeName).start();
+
+		initJafkaConsumer();
 
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				Properties props = new Properties();
-				props.put("zk.connect", zkConnect);
-				props.put("groupid", "imserver_group_" + nodeName);
-				String topid = nodeName + "_msgs";
-				//
-				ConsumerConfig consumerConfig = new ConsumerConfig(props);
-				ConsumerConnector connector = Consumer.create(consumerConfig);
-				//
 				Map<String, List<MessageStream<String>>> topicMessageStreams = connector.createMessageStreams(
-						ImmutableMap.of(topid, 2), new StringDecoder());
-				List<MessageStream<String>> streams = topicMessageStreams.get(topid);
+						ImmutableMap.of(receiveTopic, 2), new StringDecoder());
+				List<MessageStream<String>> streams = topicMessageStreams.get(receiveTopic);
 				//
 				ExecutorService executor = Executors.newFixedThreadPool(2);
 				final AtomicInteger count = new AtomicInteger();
@@ -168,15 +227,21 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 
 			}
 
-		}).start();
+		}, "#msgReceiveThread-" + nodeName).start();
+
+		OfflineMessageStrategy.addListener(offlineMsgListener);
+		PresenceEventDispatcher.addListener(presenceEventListener);
 
 		System.out.println("jafka ok...");
 	}
 
 	@Override
 	public void destroyPlugin() {
-		destroyJafkaProductor();
+
 		threadEnable = false;
+		nodeCache.delete(nodeName);
+		destroyJafkaConsumer();
+		destroyJafkaProductor();
 
 		OfflineMessageStrategy.removeListener(offlineMsgListener);
 		PresenceEventDispatcher.removeListener(presenceEventListener);
@@ -192,79 +257,29 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 		producer = new Producer<String, String>(config);
 	}
 
+	public void initJafkaConsumer() {
+		Properties props = new Properties();
+		props.put("zk.connect", zkConnect);
+		props.put("groupid", "imserver_group_" + nodeName);
+		ConsumerConfig consumerConfig = new ConsumerConfig(props);
+		connector = Consumer.create(consumerConfig);
+	}
+
 	public void destroyJafkaProductor() {
-
-		nodeCache.delete(nodeName);
-
 		if (producer != null) {
 			producer.close();
 		}
 	}
 
-	private void startMsgSendThread() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (threadEnable) {
-					try {
-						long begin = System.currentTimeMillis();
-						ConcurrentHashMap<String, ConcurrentLinkedQueue<Packet>> packetQueueMap = offlineMsgListener
-								.getPacketQueueMap();
-						if (MapUtils.isEmpty(packetQueueMap)) {
-							continue;
-						}
-
-						for (Map.Entry<String, ConcurrentLinkedQueue<Packet>> entry : packetQueueMap.entrySet()) {
-							String topic = entry.getKey()+ "_msgs";;
-							StringProducerData data = new StringProducerData(topic);
-							ConcurrentLinkedQueue<Packet> queue = entry.getValue();
-							
-							if(CollectionUtils.isEmpty(queue)){
-								continue;
-							}
-							
-							Packet packet = null;
-							while (null != (packet = queue.poll())) {
-								if (packet instanceof Message) {
-									Message msg = (Message) packet;
-									if (msg.getElement().attribute("mc") != null) {
-										offlineMessageService.saveOfflineMsg(msg);
-										continue;
-									} else {
-										msg.getElement().addAttribute("mc", "1");
-									}
-
-									long end = System.currentTimeMillis();
-									long interval = end - begin;
-
-									data.add(packet.toXML());
-
-									if (data.getData().size() >= 100 || interval > 2000) {
-										long start = System.currentTimeMillis();
-										producer.send(data);
-										long cost = System.currentTimeMillis() - start;
-										System.out.println("send message cost: " + cost + " ms:,topic:"+topic+",count:"+data.getData().size());
-										data.getData().clear();
-										continue;
-									}
-								}
-							}
-
-							long start = System.currentTimeMillis();
-							producer.send(data);
-							data.getData().clear();
-							long cost = System.currentTimeMillis() - start;
-							System.out.println("send message cost: " + cost + " ms:,topic:"+topic+",count:"+data.getData().size());
-						}
-
-					} catch (Exception e) {
-						logger.error("send to jakfa error!", e);
-						continue;
-					}
-				}
+	public void destroyJafkaConsumer() {
+		if (connector != null) {
+			connector.commitOffsets();
+			try {
+				connector.close();
+			} catch (IOException e) {
+				logger.error("destroyJafkaConsumer error!", e);
 			}
-		}).start();
-
+		}
 	}
 
 	@Override

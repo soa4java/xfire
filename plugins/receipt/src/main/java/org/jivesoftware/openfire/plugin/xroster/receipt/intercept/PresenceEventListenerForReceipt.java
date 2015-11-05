@@ -1,11 +1,11 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept;
+package org.jivesoftware.openfire.plugin.xroster.receipt.intercept;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jivesoftware.of.common.thread.XExecutor;
 import org.jivesoftware.openfire.OfflineMessageStrategy;
 import org.jivesoftware.openfire.XMPPServer;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueMap;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueWaitingReceipt;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.MessageQueueMap;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.MessageQueueWaitingReceipt;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.openfire.user.PresenceEventListener;
 import org.xmpp.packet.JID;

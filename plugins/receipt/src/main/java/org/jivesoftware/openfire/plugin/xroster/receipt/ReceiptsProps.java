@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt;
+package org.jivesoftware.openfire.plugin.xroster.receipt;
 
 import java.util.Map;
 
@@ -8,7 +8,7 @@ import org.jivesoftware.util.PropertyEventListener;
 
 public abstract class ReceiptsProps {
 
-	private static final long VALUE_DEFAULT_INTERNAL_MILLS = 500L;
+	private static final long VALUE_DEFAULT_INTERNAL_MILLS = 1000L;
 	private static final String KEY_MSG_RESENT_SCAN_INTERVAL_MILLS = "message.resent.scan.internal.mills";
 	private static final String KEY_RECEIPT_ERR_OUT_ENABLE = "receipt.err.out.enable";
 	private static final String KEY_MSG_ENQUEUE_LOG_ENABLE = "msg.enqueue.log.enable";

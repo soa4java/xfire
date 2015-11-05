@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs;
+package org.jivesoftware.openfire.plugin.xroster.receipt.msgs;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

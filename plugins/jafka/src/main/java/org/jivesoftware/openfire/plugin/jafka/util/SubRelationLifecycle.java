@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.internal.listener;
+package org.jivesoftware.openfire.plugin.jafka.util;
 
 import java.io.Serializable;
 

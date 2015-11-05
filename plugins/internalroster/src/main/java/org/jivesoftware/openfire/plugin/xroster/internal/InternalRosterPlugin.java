@@ -32,7 +32,7 @@ public class InternalRosterPlugin implements Plugin {
 	private String serviceName;
 	private IQHandler handler;
 	private InterRosterResourceBindListener resourceBindListener;
-	private InterRosterPresenceEventListener presenceEventListener;
+//	private InterRosterPresenceEventListener presenceEventListener;
 	private InternalRosterMessageInterceptor messageInterceptor;
 
 	@Override
@@ -41,7 +41,7 @@ public class InternalRosterPlugin implements Plugin {
 
 		handler = new IQMystatusHandler();
 		resourceBindListener = new InterRosterResourceBindListener();
-		presenceEventListener = new InterRosterPresenceEventListener();
+//		presenceEventListener = new InterRosterPresenceEventListener();
 		messageInterceptor = new InternalRosterMessageInterceptor();
 
 		XMPPServer.getInstance().getIQRouter().addHandler(handler);
@@ -52,7 +52,7 @@ public class InternalRosterPlugin implements Plugin {
 			componentManager.addComponent(serviceName, new InterRosterComponent());
 
 			SessionEventDispatcher.addListener(resourceBindListener);
-			PresenceEventDispatcher.addListener(presenceEventListener);
+//			PresenceEventDispatcher.addListener(presenceEventListener);
 			InterceptorManager.getInstance().addInterceptor(messageInterceptor);
 
 			// 将组件注册为服务发现内容
@@ -76,7 +76,7 @@ public class InternalRosterPlugin implements Plugin {
 			//注销服务发现的注册
 			XMPPServer.getInstance().getIQDiscoItemsHandler().removeComponentItem(serviceName);
 			SessionEventDispatcher.removeListener(resourceBindListener);
-			PresenceEventDispatcher.removeListener(presenceEventListener);
+//			PresenceEventDispatcher.removeListener(presenceEventListener);
 			InterceptorManager.getInstance().removeInterceptor(messageInterceptor);
 
 			if (Log.isInfoEnabled()) {

@@ -1,8 +1,8 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept;
+package org.jivesoftware.openfire.plugin.xroster.receipt.intercept;
 
 import org.jivesoftware.openfire.OfflineMessageListener;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.ReceiptConstants;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageClearer;
+import org.jivesoftware.openfire.plugin.xroster.receipt.ReceiptConstants;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.MessageClearer;
 import org.xmpp.packet.Message;
 
 public class OfflineMessageListenerForReceipt implements OfflineMessageListener {

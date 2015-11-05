@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.intercept;
+package org.jivesoftware.openfire.plugin.xroster.receipt.intercept;
 
 import java.util.Collection;
 
@@ -11,11 +11,11 @@ import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.interceptor.PacketInterceptor;
 import org.jivesoftware.openfire.interceptor.PacketRejectedException;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.ReceiptsProps;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueMap;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.MessageQueueWaitingReceipt;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.ReceiptMsgUtils;
-import org.jivesoftware.openfire.plugin.xroster.extcontacts.internal.receipt.msgs.ReceiptVersions;
+import org.jivesoftware.openfire.plugin.xroster.receipt.ReceiptsProps;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.MessageQueueMap;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.MessageQueueWaitingReceipt;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.ReceiptMsgUtils;
+import org.jivesoftware.openfire.plugin.xroster.receipt.msgs.ReceiptVersions;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.openfire.session.Session;
 import org.slf4j.Logger;
