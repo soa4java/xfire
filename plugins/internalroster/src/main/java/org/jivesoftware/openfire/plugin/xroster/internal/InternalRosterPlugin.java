@@ -11,9 +11,7 @@ import org.jivesoftware.openfire.interceptor.InterceptorManager;
 import org.jivesoftware.openfire.plugin.xroster.internal.component.InterRosterComponent;
 import org.jivesoftware.openfire.plugin.xroster.internal.handler.IQMystatusHandler;
 import org.jivesoftware.openfire.plugin.xroster.internal.interceptor.InternalRosterMessageInterceptor;
-import org.jivesoftware.openfire.plugin.xroster.internal.listener.InterRosterPresenceEventListener;
 import org.jivesoftware.openfire.plugin.xroster.internal.listener.InterRosterResourceBindListener;
-import org.jivesoftware.openfire.user.PresenceEventDispatcher;
 import org.jivesoftware.util.JiveGlobals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +35,7 @@ public class InternalRosterPlugin implements Plugin {
 
 	@Override
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
+		
 		serviceName = JiveGlobals.getProperty(SERVICE_NAME, DEFAULT_SERVICENAME);
 
 		handler = new IQMystatusHandler();

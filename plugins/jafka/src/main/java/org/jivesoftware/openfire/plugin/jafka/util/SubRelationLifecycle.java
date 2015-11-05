@@ -14,6 +14,7 @@ public class SubRelationLifecycle implements Serializable {
 	private String status;
     private long inactivityTime;
     private String fullJid;
+    private String nodeName;
 
     private Terminal terminal;
 
@@ -49,7 +50,17 @@ public class SubRelationLifecycle implements Serializable {
         this.terminal = terminal;
     }
 
-    public static class Terminal {
+    public String getNodeName() {
+		return nodeName;
+	}
+
+	public void setNodeName(String nodeName) {
+		this.nodeName = nodeName;
+	}
+
+
+
+	public static class Terminal {
         private String personId;
         private String resource;
 

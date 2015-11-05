@@ -32,6 +32,8 @@ import org.jivesoftware.openfire.plugin.jafka.listener.JafakaOfflineMsgListener;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageService;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageServiceImpl;
 import org.jivesoftware.openfire.plugin.jafka.vo.ImNode;
+import org.jivesoftware.openfire.plugin.jafka.vo.PacketQueue;
+import org.jivesoftware.openfire.plugin.jafka.zk.ZkUtils;
 import org.jivesoftware.openfire.user.PresenceEventDispatcher;
 import org.jivesoftware.openfire.user.PresenceEventListener;
 import org.jivesoftware.util.JiveGlobals;
@@ -57,6 +59,8 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 	private static PacketRouter packetRouter = XMPPServer.getInstance().getPacketRouter();
 	private JafakaOfflineMsgListener offlineMsgListener = new JafakaOfflineMsgListener();
 	private PresenceEventListener presenceEventListener = new InterRosterPresenceEventListener();
+	
+	public static String  rootPath = "/imserver/nodes";
 
 	public static String zkConnect;
 	public static String nodeName;
@@ -84,22 +88,23 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 
 	@Override
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
+		
 		if (StringUtils.isBlank(zkConnect) || StringUtils.isBlank(nodeName) || StringUtils.isBlank(nodeIp)) {
 			String err = "没有配置集群信息..";
 			System.err.println(err);
 			throw new RuntimeException(err);
 		}
-
-		ImNode imNode = nodeCache.get(nodeName);
-		if (imNode != null) {
-			String err = "存在重复的节点名字";
-			System.err.println(err);
-			throw new RuntimeException(err);
-		}
+		
+		
+		ZkUtils zkUtils = new ZkUtils(zkConnect);
+		ImNode imNode = new ImNode(nodeName, nodeIp, System.currentTimeMillis());
+		
+		zkUtils.subscribeImNodeDataChanges(rootPath);
+		zkUtils.registerImNode(rootPath, imNode);
 
 		imNode = new ImNode(nodeName, nodeIp, System.currentTimeMillis());
 
-		nodeCache.put(imNode.getName(), imNode);
+//		nodeCache.put(imNode.getName(), imNode);
 
 		new Thread(new ImNodeHeartbeatRunnable(nodeCache), "#ImNodeHeartbeatThread" + nodeName).start();
 
@@ -114,7 +119,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 						Thread.currentThread().sleep(1000);
 
 						long begin = System.currentTimeMillis();
-						ConcurrentHashMap<String, ConcurrentLinkedQueue<Packet>> packetQueueMap = offlineMsgListener.getPacketQueueMap();
+						ConcurrentHashMap<String, ConcurrentLinkedQueue<Packet>> packetQueueMap = PacketQueue.getInstance().getPacketQueueMap();
 						if (MapUtils.isEmpty(packetQueueMap)) {
 							continue;
 						}

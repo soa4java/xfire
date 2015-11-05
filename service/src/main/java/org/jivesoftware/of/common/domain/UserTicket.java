@@ -31,12 +31,12 @@ public class UserTicket implements Comparable<UserTicket>, Serializable {
 	/**
 	 * nodeId,
 	 */
-	private String nid;//nodeId
+	private String nodeName;//nodeId
 
 	public UserTicket() {
 	}
 
-	public UserTicket(String personId, String domain, String resource, String status, String show, String netstatus, String nodeId, long timestamp,
+	public UserTicket(String personId, String domain, String resource, String status, String show, String netstatus, String nodeName, long timestamp,
 			String tenantId) {
 		super();
 		this.pid = personId;
@@ -45,7 +45,7 @@ public class UserTicket implements Comparable<UserTicket>, Serializable {
 		this.so = show;
 		this.ns = netstatus;
 		this.rs = resource;
-		this.nid = nodeId;
+		this.nodeName = nodeName;
 		this.ts = timestamp;
 		this.tenantId = tenantId;
 	}
@@ -114,12 +114,14 @@ public class UserTicket implements Comparable<UserTicket>, Serializable {
 		this.ts = ts;
 	}
 
-	public String getNid() {
-		return nid;
+	
+
+	public String getNodeName() {
+		return nodeName;
 	}
 
-	public void setNid(String nid) {
-		this.nid = nid;
+	public void setNodeName(String nodeName) {
+		this.nodeName = nodeName;
 	}
 
 	public int compareTo(UserTicket that) {

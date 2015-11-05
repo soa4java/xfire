@@ -14,7 +14,7 @@ import com.github.zkclient.exception.ZkNoNodeException;
 import com.github.zkclient.exception.ZkNodeExistsException;
 import com.google.common.collect.Lists;
 
-public class ZkUtils {
+public class ZkUtils { 
 
 	private IZkClient zkClient;
 	
@@ -35,6 +35,10 @@ public class ZkUtils {
 
 		if (zkClient.exists(subPath)) {
 			String err = imNode.getName() + "->节点已经注册，请修改 openfire.xml 配置重新启动";
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+			}
 			System.out.println(err);
 			System.exit(0);
 		}

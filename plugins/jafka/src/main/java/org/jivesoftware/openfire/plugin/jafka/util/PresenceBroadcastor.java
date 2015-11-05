@@ -15,6 +15,8 @@ import org.jivesoftware.of.common.utils.SessionUtils;
 import org.jivesoftware.openfire.RoutingTable;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
+import org.jivesoftware.openfire.plugin.jafka.JafkaPlugin;
+import org.jivesoftware.openfire.plugin.jafka.vo.PacketQueue;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.util.JiveProperties;
 import org.jivesoftware.util.PropertyEventDispatcher;
@@ -80,7 +82,9 @@ public abstract class PresenceBroadcastor {
 			SubRelationLifecycle subStatus = JsonUtils.toBean(status, SubRelationLifecycle.class);
 
 			//订阅着为非激活不广播{"status":"0","inactivityTime":-1,"terminal":{"personId":"893036efa9db932e55683ff925fb5bc1","resource":"ERC"}}
-			if (!StringUtils.equalsIgnoreCase(subStatus.getStatus(), SubscriptionRelationStatus.AVAILABLE.getCode())) {
+			if (StringUtils.isBlank(subStatus.getNodeName())
+					|| !StringUtils.equalsIgnoreCase(subStatus.getStatus(),
+							SubscriptionRelationStatus.AVAILABLE.getCode())) {
 				continue;
 			}
 
@@ -96,11 +100,16 @@ public abstract class PresenceBroadcastor {
 			}
 
 			Presence copy = presence.createCopy();
-			JID jid = new JID(subStatus.getTerminal().getPersonId(), xmppDomain, subscriberResourceCode);
-			copy.setTo(jid);
-			ClientSession clientSession = SessionManager.getInstance().getSession(jid);
-			if (clientSession != null) {
-				clientSession.deliverRawText(copy.toXML());
+
+			if (StringUtils.endsWithIgnoreCase(JafkaPlugin.nodeName, subStatus.getNodeName())) {
+				JID jid = new JID(subStatus.getTerminal().getPersonId(), xmppDomain, subscriberResourceCode);
+				copy.setTo(jid);
+				ClientSession clientSession = SessionManager.getInstance().getSession(jid);
+				if (clientSession != null) {
+					clientSession.deliverRawText(copy.toXML());
+				}
+			}else{
+				PacketQueue.getInstance().add(subStatus.getNodeName(), copy);
 			}
 		}
 	}

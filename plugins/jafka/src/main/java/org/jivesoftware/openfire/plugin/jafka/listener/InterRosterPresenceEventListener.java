@@ -6,6 +6,7 @@ import net.yanrc.web.xweb.presence.api.PresenceSubscriptionApi;
 
 import org.apache.commons.lang.StringUtils;
 import org.jivesoftware.of.common.constants.XConstants;
+import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.enums.Resource;
 import org.jivesoftware.of.common.spring.SpringContextHolder;
 import org.jivesoftware.of.common.utils.SessionUtils;
@@ -35,7 +36,7 @@ public class InterRosterPresenceEventListener implements PresenceEventListener {
 
 	@Override
 	public void availableSession(ClientSession session, Presence presence) {
-		
+
 		JID jid = presence.getFrom();
 		UserNode userNode = new UserNode(jid.getNode(), jid.getDomain(), jid.getResource(), JafkaPlugin.nodeName);
 		userNodeCache.put(jid.getNode(), userNode);
@@ -47,11 +48,11 @@ public class InterRosterPresenceEventListener implements PresenceEventListener {
 
 	@Override
 	public void unavailableSession(ClientSession session, Presence presence) {
-		
+
 		JID jid = presence.getFrom();
 		UserNode userNode = new UserNode(jid.getNode(), jid.getDomain(), jid.getResource(), JafkaPlugin.nodeName);
 		userNodeCache.remove(jid.getNode(), userNode);
-		
+
 		avaiableSubscriptionRelation(false, session, presence);
 	}
 
@@ -71,12 +72,16 @@ public class InterRosterPresenceEventListener implements PresenceEventListener {
 		String tenantId = SessionUtils.getTopGroupId(presence.getFrom());
 		String personId = presence.getFrom().getNode();
 		String resource = presence.getFrom().getResource();
+
+		UserTicket userTicket = UserTickets.newUserTicket(presence);
+		userTicket.setNodeName(JafkaPlugin.nodeName);
+
 		if (actived) {
 			presenceSubscriptionApi.activeSubscriptionRelationThenPublishUserTicket(tenantId, personId, resource,
-					UserTickets.newUserTicket(presence));
+					userTicket);
 		} else {
 			presenceSubscriptionApi.inactiveSubscriptionRelationThenPublishUserTicket(tenantId, personId, resource,
-					UserTickets.newUserTicket(presence));
+					userTicket);
 		}
 		PresenceBroadcasts.broadCastPresence(presence.createCopy(), presence);
 	}
@@ -110,7 +115,9 @@ public class InterRosterPresenceEventListener implements PresenceEventListener {
 				}
 			}
 			//更新跨域状态
-			presenceSubscriptionApi.publishUserTicket(UserTickets.newUserTicket(presence));
+			UserTicket userTicket= UserTickets.newUserTicket(presence);
+			userTicket.setNodeName(JafkaPlugin.nodeName);
+			presenceSubscriptionApi.publishUserTicket(userTicket);
 			return;
 		}
 
