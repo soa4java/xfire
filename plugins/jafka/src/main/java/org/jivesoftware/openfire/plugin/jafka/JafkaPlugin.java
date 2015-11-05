@@ -27,7 +27,7 @@ import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.plugin.jafka.cache.NodeCache;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisNodeCacheImpl;
-import org.jivesoftware.openfire.plugin.jafka.listener.InterRosterPresenceEventListener;
+import org.jivesoftware.openfire.plugin.jafka.listener.JafkaPresenceEventListener;
 import org.jivesoftware.openfire.plugin.jafka.listener.JafakaOfflineMsgListener;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageService;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageServiceImpl;
@@ -58,7 +58,7 @@ public class JafkaPlugin extends PluginAdaptor implements Plugin {
 	private static Logger logger = LoggerFactory.getLogger(JafkaPlugin.class);
 	private static PacketRouter packetRouter = XMPPServer.getInstance().getPacketRouter();
 	private JafakaOfflineMsgListener offlineMsgListener = new JafakaOfflineMsgListener();
-	private PresenceEventListener presenceEventListener = new InterRosterPresenceEventListener();
+	private PresenceEventListener presenceEventListener = new JafkaPresenceEventListener();
 	
 	public static String  rootPath = "/imserver/nodes";
 
