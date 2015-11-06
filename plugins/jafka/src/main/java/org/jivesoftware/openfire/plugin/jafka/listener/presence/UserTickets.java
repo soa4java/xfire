@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.jafka.util;
+package org.jivesoftware.openfire.plugin.jafka.listener.presence;
 
 import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.utils.SessionUtils;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin>
-  <class>org.jivesoftware.openfire.plugin.jafka.JafkaPlugin</class>
+  <class>org.jivesoftware.openfire.plugin.jafka.ClusterPlugin</class>
   <name>${pom.name}</name>
   <description>${pom.description}</description>
   <author>${pom.organization.name}</author>

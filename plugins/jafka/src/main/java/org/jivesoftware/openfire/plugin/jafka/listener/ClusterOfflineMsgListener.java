@@ -4,7 +4,7 @@ import org.jivesoftware.openfire.OfflineMessageListener;
 import org.jivesoftware.openfire.plugin.jafka.vo.PacketQueue;
 import org.xmpp.packet.Message;
 
-public class JafakaOfflineMsgListener implements OfflineMessageListener {
+public class ClusterOfflineMsgListener implements OfflineMessageListener {
 
 	PacketQueue packetQueue = PacketQueue.getInstance();
 	

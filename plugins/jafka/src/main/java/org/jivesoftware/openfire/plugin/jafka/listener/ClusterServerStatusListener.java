@@ -1,14 +1,14 @@
 package org.jivesoftware.openfire.plugin.jafka.listener;
 
 import org.jivesoftware.openfire.XMPPServerListener;
-import org.jivesoftware.openfire.plugin.jafka.JafkaPlugin;
+import org.jivesoftware.openfire.plugin.jafka.ClusterPlugin;
 import org.jivesoftware.openfire.plugin.jafka.cache.NodeCache;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisNodeCacheImpl;
 
-public class JafkaXMPPServerListener implements XMPPServerListener {
+public class ClusterServerStatusListener implements XMPPServerListener {
 	
 	private NodeCache  nodeCache;
-	public JafkaXMPPServerListener(){
+	public ClusterServerStatusListener(){
 		nodeCache = RedisNodeCacheImpl.getInstance();
 	}
 
@@ -19,7 +19,7 @@ public class JafkaXMPPServerListener implements XMPPServerListener {
 
 	@Override
 	public void serverStopping() {
-		nodeCache.delete(JafkaPlugin.nodeName);
+		nodeCache.delete(ClusterPlugin.nodeName);
 	}
 
 }

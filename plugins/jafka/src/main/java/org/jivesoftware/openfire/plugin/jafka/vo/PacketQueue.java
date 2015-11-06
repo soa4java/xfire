@@ -5,11 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.jivesoftware.openfire.plugin.jafka.JafkaPlugin;
+import org.jivesoftware.openfire.plugin.jafka.ClusterPlugin;
 import org.jivesoftware.openfire.plugin.jafka.cache.UserNodeCache;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisUserNodeCacheImpl;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageService;
-import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageServiceImpl;
+import org.jivesoftware.openfire.plugin.jafka.service.ClusterOfflineMessageServiceImpl;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.Packet;
@@ -37,7 +37,7 @@ public class PacketQueue {
 
 	private PacketQueue() {
 		userNodeCache = RedisUserNodeCacheImpl.getInstance();
-		offlineMessageService = OfflineMessageServiceImpl.getInstance();
+		offlineMessageService = ClusterOfflineMessageServiceImpl.getInstance();
 	}
 
 	public void enQueue(Packet packet) {
@@ -51,7 +51,7 @@ public class PacketQueue {
 		}
 
 		for (UserNode node : userNodes) {
-			if (node.getNodeName().equalsIgnoreCase(JafkaPlugin.nodeName)) {//在本地节点已经发送过了
+			if (node.getNodeName().equalsIgnoreCase(ClusterPlugin.nodeName)) {//在本地节点已经发送过了
 				continue;
 			}
 

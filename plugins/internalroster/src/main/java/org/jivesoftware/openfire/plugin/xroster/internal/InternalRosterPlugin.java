@@ -7,10 +7,8 @@ import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.event.SessionEventDispatcher;
 import org.jivesoftware.openfire.handler.IQHandler;
-import org.jivesoftware.openfire.interceptor.InterceptorManager;
 import org.jivesoftware.openfire.plugin.xroster.internal.component.InterRosterComponent;
 import org.jivesoftware.openfire.plugin.xroster.internal.handler.IQMystatusHandler;
-import org.jivesoftware.openfire.plugin.xroster.internal.interceptor.InternalRosterMessageInterceptor;
 import org.jivesoftware.openfire.plugin.xroster.internal.listener.InterRosterResourceBindListener;
 import org.jivesoftware.util.JiveGlobals;
 import org.slf4j.Logger;
@@ -30,8 +28,6 @@ public class InternalRosterPlugin implements Plugin {
 	private String serviceName;
 	private IQHandler handler;
 	private InterRosterResourceBindListener resourceBindListener;
-//	private InterRosterPresenceEventListener presenceEventListener;
-	private InternalRosterMessageInterceptor messageInterceptor;
 
 	@Override
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
@@ -40,8 +36,6 @@ public class InternalRosterPlugin implements Plugin {
 
 		handler = new IQMystatusHandler();
 		resourceBindListener = new InterRosterResourceBindListener();
-//		presenceEventListener = new InterRosterPresenceEventListener();
-		messageInterceptor = new InternalRosterMessageInterceptor();
 
 		XMPPServer.getInstance().getIQRouter().addHandler(handler);
 
@@ -51,8 +45,6 @@ public class InternalRosterPlugin implements Plugin {
 			componentManager.addComponent(serviceName, new InterRosterComponent());
 
 			SessionEventDispatcher.addListener(resourceBindListener);
-//			PresenceEventDispatcher.addListener(presenceEventListener);
-			InterceptorManager.getInstance().addInterceptor(messageInterceptor);
 
 			// 将组件注册为服务发现内容
 			String domain = XMPPServer.getInstance().getServerInfo().getXMPPDomain();
@@ -75,8 +67,6 @@ public class InternalRosterPlugin implements Plugin {
 			//注销服务发现的注册
 			XMPPServer.getInstance().getIQDiscoItemsHandler().removeComponentItem(serviceName);
 			SessionEventDispatcher.removeListener(resourceBindListener);
-//			PresenceEventDispatcher.removeListener(presenceEventListener);
-			InterceptorManager.getInstance().removeInterceptor(messageInterceptor);
 
 			if (Log.isInfoEnabled()) {
 				Log.info("InternalRosterPlugin destroy successfully...");

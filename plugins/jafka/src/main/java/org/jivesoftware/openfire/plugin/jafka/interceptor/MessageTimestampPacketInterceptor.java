@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.internal.interceptor;
+package org.jivesoftware.openfire.plugin.jafka.interceptor;
 
 import org.jivesoftware.openfire.interceptor.PacketInterceptor;
 import org.jivesoftware.openfire.interceptor.PacketRejectedException;
@@ -6,7 +6,7 @@ import org.jivesoftware.openfire.session.Session;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.Packet;
 
-public class InternalRosterMessageInterceptor implements PacketInterceptor {
+public class MessageTimestampPacketInterceptor implements PacketInterceptor {
 
 	@Override
 	public void interceptPacket(Packet packet, Session session, boolean incoming, boolean processed)

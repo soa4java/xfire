@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.jafka.listener;
+package org.jivesoftware.openfire.plugin.jafka.listener.presence;
 
 import java.util.Collection;
 
@@ -11,11 +11,9 @@ import org.jivesoftware.of.common.enums.Resource;
 import org.jivesoftware.of.common.spring.SpringContextHolder;
 import org.jivesoftware.of.common.utils.SessionUtils;
 import org.jivesoftware.openfire.SessionManager;
-import org.jivesoftware.openfire.plugin.jafka.JafkaPlugin;
+import org.jivesoftware.openfire.plugin.jafka.ClusterPlugin;
 import org.jivesoftware.openfire.plugin.jafka.cache.UserNodeCache;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisUserNodeCacheImpl;
-import org.jivesoftware.openfire.plugin.jafka.util.PresenceBroadcasts;
-import org.jivesoftware.openfire.plugin.jafka.util.UserTickets;
 import org.jivesoftware.openfire.plugin.jafka.vo.UserNode;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.openfire.session.Session;
@@ -24,12 +22,12 @@ import org.jivesoftware.util.JiveProperties;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Presence;
 
-public class JafkaPresenceEventListener implements PresenceEventListener {
+public class ClusterPresenceEventListener implements PresenceEventListener {
 
 	PresenceSubscriptionApi presenceSubscriptionApi;
 	UserNodeCache userNodeCache;
 
-	public JafkaPresenceEventListener() {
+	public ClusterPresenceEventListener() {
 		presenceSubscriptionApi = SpringContextHolder.getBean(PresenceSubscriptionApi.class);
 		userNodeCache = RedisUserNodeCacheImpl.getInstance();
 	}
@@ -38,7 +36,7 @@ public class JafkaPresenceEventListener implements PresenceEventListener {
 	public void availableSession(ClientSession session, Presence presence) {
 
 		JID jid = presence.getFrom();
-		UserNode userNode = new UserNode(jid.getNode(), jid.getDomain(), jid.getResource(), JafkaPlugin.nodeName);
+		UserNode userNode = new UserNode(jid.getNode(), jid.getDomain(), jid.getResource(), ClusterPlugin.nodeName);
 		userNodeCache.put(jid.getNode(), userNode);
 
 		session.setMessageCarbonsEnabled(true);
@@ -50,7 +48,7 @@ public class JafkaPresenceEventListener implements PresenceEventListener {
 	public void unavailableSession(ClientSession session, Presence presence) {
 
 		JID jid = presence.getFrom();
-		UserNode userNode = new UserNode(jid.getNode(), jid.getDomain(), jid.getResource(), JafkaPlugin.nodeName);
+		UserNode userNode = new UserNode(jid.getNode(), jid.getDomain(), jid.getResource(), ClusterPlugin.nodeName);
 		userNodeCache.remove(jid.getNode(), userNode);
 
 		avaiableSubscriptionRelation(false, session, presence);
@@ -74,7 +72,7 @@ public class JafkaPresenceEventListener implements PresenceEventListener {
 		String resource = presence.getFrom().getResource();
 
 		UserTicket userTicket = UserTickets.newUserTicket(presence);
-		userTicket.setNodeName(JafkaPlugin.nodeName);
+		userTicket.setNodeName(ClusterPlugin.nodeName);
 
 		if (actived) {
 			presenceSubscriptionApi.activeSubscriptionRelationThenPublishUserTicket(tenantId, personId, resource,
@@ -115,8 +113,8 @@ public class JafkaPresenceEventListener implements PresenceEventListener {
 				}
 			}
 			//更新跨域状态
-			UserTicket userTicket= UserTickets.newUserTicket(presence);
-			userTicket.setNodeName(JafkaPlugin.nodeName);
+			UserTicket userTicket = UserTickets.newUserTicket(presence);
+			userTicket.setNodeName(ClusterPlugin.nodeName);
 			presenceSubscriptionApi.publishUserTicket(userTicket);
 			return;
 		}

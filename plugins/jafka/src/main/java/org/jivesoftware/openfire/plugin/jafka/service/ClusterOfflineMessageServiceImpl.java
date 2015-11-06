@@ -3,7 +3,7 @@ package org.jivesoftware.openfire.plugin.jafka.service;
 import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisNodeCacheImpl;
 import org.xmpp.packet.Message;
 
-public class OfflineMessageServiceImpl implements OfflineMessageService {
+public class ClusterOfflineMessageServiceImpl implements OfflineMessageService {
 	
 	private static OfflineMessageService instance;
 
@@ -11,7 +11,7 @@ public class OfflineMessageServiceImpl implements OfflineMessageService {
 		if (instance == null) {
 			synchronized (RedisNodeCacheImpl.class) {
 				if (instance == null) {
-					instance = new OfflineMessageServiceImpl();
+					instance = new ClusterOfflineMessageServiceImpl();
 				}
 			}
 		}
@@ -19,7 +19,7 @@ public class OfflineMessageServiceImpl implements OfflineMessageService {
 		return instance;
 	}
 	
-	private OfflineMessageServiceImpl(){
+	private ClusterOfflineMessageServiceImpl(){
 		
 	}
 

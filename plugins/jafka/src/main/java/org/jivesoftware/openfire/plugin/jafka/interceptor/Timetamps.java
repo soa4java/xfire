@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.internal.interceptor;
+package org.jivesoftware.openfire.plugin.jafka.interceptor;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.dom4j.Element;

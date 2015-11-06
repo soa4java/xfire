@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.xroster.internal.listener;
+package org.jivesoftware.openfire.plugin.jafka.listener.presence;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.yanrc.app.common.util.JsonUtils;
-import net.yanrc.web.xweb.presence.api.PresenceSubscriptionApi;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -14,9 +13,9 @@ import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.domain.utils.DomainNodeJidCacheUtils;
 import org.jivesoftware.of.common.enums.PresenceStatus;
 import org.jivesoftware.of.common.enums.Resource;
-import org.jivesoftware.of.common.spring.SpringContextHolder;
 import org.jivesoftware.of.common.thread.XExecutor;
 import org.jivesoftware.of.common.utils.SessionUtils;
+import org.jivesoftware.openfire.plugin.jafka.ClusterRemoteApis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
@@ -27,23 +26,17 @@ import com.google.common.collect.Maps;
 
 public class PresenceBroadcasts {
 
-	static PresenceSubscriptionApi presenceSubscriptionApi;
-
-	static {
-		presenceSubscriptionApi = SpringContextHolder.getBean(PresenceSubscriptionApi.class);
-	}
-
 	private static final Logger logger = LoggerFactory.getLogger(PresenceBroadcasts.class);
 
 	public static final String FINAL = "final";
 
 	//通知本域上的订阅者
 	public static void broadCastPresence(final Presence original, final Presence presence) {
-		if (PresenceBroadcastor.presenceBroadcastEnable) {
+		if (PresenceBroadcastors.presenceBroadcastEnable) {
 			XExecutor.globalExecutor.submit((new Runnable() {
 				@Override
 				public void run() {
-					PresenceBroadcastor.broadcastPresence(original, presence.createCopy());
+					PresenceBroadcastors.broadcastPresence(original, presence.createCopy());
 				}
 			}));
 		}
@@ -66,19 +59,14 @@ public class PresenceBroadcasts {
 		String personId = from.getNode();
 		String tenantId = SessionUtils.getTopGroupId(from);
 
-		Map<String, String> UserTicketStrMap = presenceSubscriptionApi.getUserTicket(tenantId, personId).getModel();
+		Map<String, UserTicket> userTicketMap = ClusterRemoteApis.getUserTicket(tenantId, personId);
 
-		if (MapUtils.isEmpty(UserTicketStrMap)) {
+		if (MapUtils.isEmpty(userTicketMap)) {
 			addFinal(presence);
 			return true;
 		}
 
-		Map<Resource, UserTicket> UserTicketMap = Maps.newHashMap();
-		for (Map.Entry<String, String> entry : UserTicketStrMap.entrySet()) {
-			UserTicketMap.put(Resource.fromCode(entry.getKey()), JsonUtils.toBean(entry.getValue(), UserTicket.class));
-		}
-
-		List<UserTicket> domainValues = Lists.newArrayList(UserTicketMap.values());
+		List<UserTicket> domainValues = Lists.newArrayList(userTicketMap.values());
 		Collections.sort(domainValues);
 		UserTicket tailOld = domainValues.get(domainValues.size() - 1);
 
