@@ -61,6 +61,7 @@ public class ClusterPresenceEventListener implements PresenceEventListener {
 		}
 
 		doPresenceBroadcastIfNecessary(presence, session);
+		avaiableSubscriptionRelation(true, session, presence);
 	}
 
 	private void avaiableSubscriptionRelation(boolean actived, ClientSession session, Presence presence) {

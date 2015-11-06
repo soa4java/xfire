@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.yanrc.app.common.util.UUIDGenerator;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.jivesoftware.of.common.constants.XConstants;
@@ -22,18 +24,23 @@ public class GroupMessages {
 
     static Logger LOG = LoggerFactory.getLogger(GroupMessages.class);
        
-    public static  void broadcastMsgToOnlineMember(final Set<String> members, final Message msg, final String mySelfPid) {
-		if (CollectionUtils.isNotEmpty(members)) {
+    public static  void broadcastMsgToMembers(final Set<String> memberPids, final Message msg, final String mySelfPid,boolean onlyOnline) {
+		if (CollectionUtils.isNotEmpty(memberPids)) {
 
-			Map<String, List<UserTicket>> onlineGroupMemeberMap = GroupChatRemoteApis
-					.getPidAndDomainMapForOnline(members);
+			Map<String, List<UserTicket>> userTicketmap = null;
+			
+			if(onlyOnline){
+				userTicketmap = GroupChatRemoteApis.getOnlineUserTicketMap(memberPids);
+			}else{
+				userTicketmap = GroupChatRemoteApis.getUserTicketMap(memberPids);
+			}
 
-			if (MapUtils.isEmpty(onlineGroupMemeberMap)) {
+			if (MapUtils.isEmpty(userTicketmap)) {
 				return;
 			}
 
-			for (String pid : members) {
-				List<UserTicket> userTickets = onlineGroupMemeberMap.get(pid);
+			for (String pid : memberPids) {
+				List<UserTicket> userTickets = userTicketmap.get(pid);
 
 				if (CollectionUtils.isEmpty(userTickets)) {
 					continue;
@@ -44,12 +51,20 @@ public class GroupMessages {
 				}
 
 				for (UserTicket userTicket : userTickets) {
-					Message newMemberJoinMsg = msg.createCopy();
-					newMemberJoinMsg.setTo(new JID(userTicket.getPid(), userTicket.getDm(), userTicket.getRs(), false));
-					PacketQueue.getInstance().add(userTicket.getNodeName(), newMemberJoinMsg);
+					Message msgCpoy = msg.createCopy();
+					msgCpoy.setTo(new JID(userTicket.getPid(), userTicket.getDm(), userTicket.getRs(), false));
+					PacketQueue.getInstance().add(userTicket.getNodeName(), msgCpoy);
+					if(!onlyOnline){
+						msgCpoy.getElement().addElement(XConstants.RESOURCE).setText(msgCpoy.getFrom().getResource());
+						msgCpoy.setID(generateMsgId());
+					}
 				}
 			}
 		}
+	}
+    
+    public static  String generateMsgId() {
+		return UUIDGenerator.getUuid();
 	}
 
     //TODO 组成员发生变化发送消息通知

@@ -235,7 +235,7 @@ public class IQProcessor extends AbstractProcessor {
 			@Override
 			public void run() {
 				broadcastToMySelfOtherResources(mySelfPid, resource, cancelMsg);
-				GroupMessages.broadcastMsgToOnlineMember(members,cancelMsg,mySelfPid);
+				GroupMessages.broadcastMsgToMembers(members,cancelMsg,mySelfPid,true);
 			}
 		});
 	}
@@ -389,7 +389,7 @@ public class IQProcessor extends AbstractProcessor {
 				//                Set<String> groupTempRevSubPids = GroupChatHelper.getPids(groupTempRevSubs);
 
 				broadcastToMySelfOtherResources(mySelfPid, resource, newMemberJoinMessage);
-				GroupMessages.broadcastMsgToOnlineMember(originalGroupMemberIds,newMemberJoinMessage,mySelfPid);
+				GroupMessages.broadcastMsgToMembers(originalGroupMemberIds,newMemberJoinMessage,mySelfPid,true);
 
 				//给被邀请人推送邀请协议
 				if (CollectionUtils.isNotEmpty(toBeInvitedMemberJids)) {

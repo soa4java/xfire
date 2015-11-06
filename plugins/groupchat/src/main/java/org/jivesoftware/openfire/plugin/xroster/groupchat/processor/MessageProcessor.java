@@ -22,6 +22,7 @@ import org.jivesoftware.of.common.utils.SessionUtils;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.helper.GroupChatCrossDomainHelper;
+import org.jivesoftware.openfire.plugin.xroster.groupchat.helper.GroupMessages;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,10 +74,14 @@ public class MessageProcessor extends AbstractProcessor {
 
 		final Set<String> memberIds = result.getModel().getMemberIds();
 
-		Map<String, UserTicket> pidMapInOtherDomain = GroupChatCrossDomainHelper.getPidAndDomainMapInOther(memberIds);
+		
+		Message msgCopy = message.createCopy();
 		String mySelfPid = fromJID.getNode();
-
-		for (String pid : memberIds) {
+		msgCopy.getElement().addElement(XConstants.GRP_FROM_JID).setText(fromJID.toString());//给msg增加一个from节点，便于在广播给自己其他终端时，区分其他终端。
+		broadcastToSelfOtherTerminals(msgCopy);
+		GroupMessages.broadcastMsgToMembers(memberIds,msgCopy,mySelfPid,false);
+		
+		/*for (String pid : memberIds) {
 			Message msgCopy = message.createCopy();
 			msgCopy.getElement().addElement(XConstants.GRP_FROM_JID).setText(fromJID.toString());//给msg增加一个from节点，便于在广播给自己其他终端时，区分其他终端。
 
@@ -97,7 +102,7 @@ public class MessageProcessor extends AbstractProcessor {
 			msgCopy.getElement().addElement(XConstants.RESOURCE).setText(message.getFrom().getResource());
 			msgCopy.setID(generateMsgId());
 			server.getPacketRouter().route(msgCopy);
-		}
+		}*/
 
 		if (Properties.recentContactEnable) {
 			XExecutor.groupChatExecutor.submit(new Runnable() {

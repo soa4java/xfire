@@ -17,8 +17,12 @@ public class GroupChatRemoteApis {
 		presenceSubscriptionApi = SpringContextHolder.getBean(PresenceSubscriptionApi.class);
 	}
 	
-	public static Map<String, List<UserTicket>> getPidAndDomainMapForOnline(Set<String> pids){
-		return presenceSubscriptionApi.getPidAndDomainMapForOnline(pids).getModel();
+	public static Map<String, List<UserTicket>> getOnlineUserTicketMap(Set<String> pids){
+		return presenceSubscriptionApi.getOnlineUserTicketMap(pids).getModel();
+	}
+	
+	public static Map<String, List<UserTicket>> getUserTicketMap(Set<String> pids){
+		return presenceSubscriptionApi.getUserTicketMap(pids).getModel();
 	}
 	
 
