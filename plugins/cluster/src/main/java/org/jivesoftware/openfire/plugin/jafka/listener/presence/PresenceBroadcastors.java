@@ -3,7 +3,7 @@ package org.jivesoftware.openfire.plugin.jafka.listener.presence;
 import java.util.List;
 import java.util.Map;
 
-import net.yanrc.web.xweb.presence.domain.SubscriptionRelationLifecycle;
+import net.yanrc.web.xweb.presence.domain.SubRelationLifecycle;
 import net.yanrc.web.xweb.presence.enums.SubscriptionRelationStatus;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -58,7 +58,7 @@ public class PresenceBroadcastors {
 		String personId = from.getNode();
 		String resourceCode = from.getResource();
 		String tenantId = SessionUtils.getTopGroupId(from);
-		List<SubscriptionRelationLifecycle> subscriptionRelationLifecycles = ClusterRemoteApis
+		List<SubRelationLifecycle> subscriptionRelationLifecycles = ClusterRemoteApis
 				.getSubscribersLifecycles(personId, resourceCode, tenantId);
 
 		if (CollectionUtils.isEmpty(subscriptionRelationLifecycles)) {
@@ -67,7 +67,7 @@ public class PresenceBroadcastors {
 		}
 
 		//String fromFullJID = presence.getFrom().toFullJID();
-		for (SubscriptionRelationLifecycle subStatus : subscriptionRelationLifecycles) {
+		for (SubRelationLifecycle subStatus : subscriptionRelationLifecycles) {
 			if (subStatus == null) {
 				logger.warn("status is null, personId: {}", personId);
 				continue;
@@ -76,17 +76,17 @@ public class PresenceBroadcastors {
 
 			//订阅着为非激活不广播{"status":"0","inactivityTime":-1,"terminal":{"personId":"893036efa9db932e55683ff925fb5bc1","resource":"ERC"}}
 			if (StringUtils.isBlank(subStatus.getNodeName())
-					|| !StringUtils.equalsIgnoreCase(subStatus.getStatus().getCode(),
+					|| !StringUtils.equalsIgnoreCase(subStatus.getStatus(),
 							SubscriptionRelationStatus.AVAILABLE.getCode())) {
 				continue;
 			}
-
+			subStatus.getTerminal().getPersonId();
 			//本人不广播
 			if (subStatus.getTerminal() == null || personId.equals(subStatus.getTerminal().getPersonId())) {
 				continue;
 			}
 
-			String subscriberResourceCode = subStatus.getTerminal().getResource().getCode();
+			String subscriberResourceCode = subStatus.getTerminal().getResource();
 			//只广播给PC端，非PC端不广播
 			if (!StringUtils.equalsIgnoreCase(subscriberResourceCode, Resource.PC.getCode())) {
 				continue;

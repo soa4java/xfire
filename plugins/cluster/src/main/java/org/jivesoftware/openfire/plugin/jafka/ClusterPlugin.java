@@ -254,7 +254,7 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 		PresenceEventDispatcher.addListener(presenceEventListener);
 		InterceptorManager.getInstance().addInterceptor(messageInterceptor);
 
-		System.out.println("jafka ok...");
+		System.out.println(this.getClass().getSimpleName() + " init succeed!");
 	}
 
 	@Override

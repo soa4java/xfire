@@ -8,6 +8,6 @@
   <version>${pom.version}</version>
   <date>${openfire-plugin.build.date}</date>
   <minServerVersion>${pom.version}</minServerVersion>
-  <licenseType>gpl</licenseType>
+  <licenseType>gpl </licenseType>
   
 </plugin>

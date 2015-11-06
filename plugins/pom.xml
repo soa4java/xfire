@@ -10,7 +10,7 @@
 
 	<modules>
 		<module>auth</module>
-		<module>jafka</module>
+		<module>cluster</module>
 		<module>presence</module>
 		<module>groupchat</module>
 		<module>time</module>
