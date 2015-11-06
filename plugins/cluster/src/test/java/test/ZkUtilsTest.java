@@ -1,8 +1,6 @@
 package test;
 
-import java.util.concurrent.CountDownLatch;
-
-import org.jivesoftware.openfire.plugin.jafka.vo.ImNode;
+import org.jivesoftware.of.common.node.ImNode;
 import org.jivesoftware.openfire.plugin.jafka.zk.ZkUtils;
 
 public class ZkUtilsTest {

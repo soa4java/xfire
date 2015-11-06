@@ -1,9 +1,9 @@
 package org.jivesoftware.openfire.plugin.jafka.listener;
 
+import org.jivesoftware.of.common.node.cache.NodeCache;
+import org.jivesoftware.of.common.node.cache.impl.redis.RedisNodeCacheImpl;
 import org.jivesoftware.openfire.XMPPServerListener;
 import org.jivesoftware.openfire.plugin.jafka.ClusterPlugin;
-import org.jivesoftware.openfire.plugin.jafka.cache.NodeCache;
-import org.jivesoftware.openfire.plugin.jafka.cache.impl.redis.RedisNodeCacheImpl;
 
 public class ClusterServerStatusListener implements XMPPServerListener {
 	

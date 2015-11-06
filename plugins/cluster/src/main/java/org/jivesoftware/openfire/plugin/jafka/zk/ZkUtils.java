@@ -5,7 +5,7 @@ import java.util.List;
 import net.yanrc.app.common.util.JsonUtils;
 
 import org.apache.zookeeper.CreateMode;
-import org.jivesoftware.openfire.plugin.jafka.vo.ImNode;
+import org.jivesoftware.of.common.node.ImNode;
 
 import com.github.zkclient.IZkChildListener;
 import com.github.zkclient.IZkClient;

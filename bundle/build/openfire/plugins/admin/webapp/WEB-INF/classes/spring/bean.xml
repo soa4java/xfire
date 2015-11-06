@@ -44,7 +44,7 @@
     <dubbo:reference id="presenceSubscriptionApi" version="1.0.0" group="social" timeout="30000" interface="net.yanrc.web.xweb.presence.api.PresenceSubscriptionApi">
    		 <dubbo:method name="publishUserTicket" async="true" />
    		 <dubbo:method name="activeSubscriptionRelationThenPublishUserTicket" async="true" />
-   		 <dubbo:method name="inactiveSubscriptionRelationThenPublishUserTicket" async="true" />    
+   		 <dubbo:method name="inactiveSubscriptionRelationThenPublishUserTicket" async="true" /> 
     </dubbo:reference>
     
     <bean id="springContextHolder" class="org.jivesoftware.of.common.spring.SpringContextHolder" />
