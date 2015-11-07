@@ -1,4 +1,4 @@
-package org.jivesoftware.openfire.plugin.jafka.interceptor;
+package org.jivesoftware.openfire.plugin.jafka;
 
 import java.util.List;
 
@@ -11,52 +11,14 @@ import org.jivesoftware.of.common.node.ImNodes;
 import org.jivesoftware.of.common.node.UserNode;
 import org.jivesoftware.of.common.node.cache.UserNodeCache;
 import org.jivesoftware.of.common.node.cache.impl.redis.RedisUserNodeCacheImpl;
-import org.jivesoftware.of.common.thread.XExecutor;
-import org.jivesoftware.of.common.utils.ImPotocals;
-import org.jivesoftware.openfire.interceptor.PacketInterceptor;
-import org.jivesoftware.openfire.interceptor.PacketRejectedException;
-import org.jivesoftware.openfire.plugin.jafka.ClusterMessages;
-import org.jivesoftware.openfire.session.Session;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
-import org.xmpp.packet.Packet;
 import org.xmpp.packet.PacketExtension;
 
-public class MessageTimestampPacketInterceptor implements PacketInterceptor {
-
-	@Override
-	public void interceptPacket(Packet packet, Session session, boolean incoming, boolean processed)
-			throws PacketRejectedException {
-		if (packet instanceof Message) {
-			if (incoming && !processed) {
-				final Message message = (Message) packet;
-				if (Message.Type.chat == message.getType() || Message.Type.groupchat == message.getType()) {
-					Timetamps.addTimetamp(message);
-				}
-				
-
-				if (ImPotocals.isReceipt(message)) {
-					return;
-				}
-
-				if (message.getElement().attribute("mc") != null) {
-					return;
-				}
-				//转发给自己的其他终端
-//				XExecutor.globalExecutor.submit(new Runnable() {
-//
-//					@Override
-//					public void run() {
-//						send(message, message.getFrom(), true);
-//					}
-//				});
-			}
-		}
-
-	}
+public abstract class ClusterMessages {
 
 	static UserNodeCache userNodeCache = RedisUserNodeCacheImpl.getInstance();
-	
+
 	public static void send(Message message, JID recipientJID, boolean toSelf) {
 		List<UserNode> userNodes = userNodeCache.get(recipientJID.getNode());
 		if (CollectionUtils.isEmpty(userNodes)) {
@@ -85,4 +47,5 @@ public class MessageTimestampPacketInterceptor implements PacketInterceptor {
 			}
 		}
 	}
+
 }

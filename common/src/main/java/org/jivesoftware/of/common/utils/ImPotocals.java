@@ -68,6 +68,12 @@ public abstract class ImPotocals {
 	public static boolean isAutoReply(Message msg) {
 		return msg.getExtension("autoReply", "http://www.servyou.com.cn/protocol/autoReply") != null;
 	}
+	
+	public static boolean isReceipt(Message msg) {
+		return (msg.getExtension("received", "http://www.servyou.com.cn/protocol/server/received") != null
+				||msg.getExtension("received", "http://www.servyou.com.cn/protocol/client/received") != null);
+	}
+	
 
 	/**
 	 * 是否是已读消息类型

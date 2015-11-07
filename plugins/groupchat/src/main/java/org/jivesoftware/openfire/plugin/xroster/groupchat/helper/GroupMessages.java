@@ -63,6 +63,7 @@ public class GroupMessages {
 						msgCopy.getElement().addElement(XConstants.RESOURCE).setText(msgCopy.getFrom().getResource());
 						msgCopy.setID(generateMsgId());
 					}
+					
 					if (StringUtils.equalsIgnoreCase(userTicket.getNodeName(), ImNodes.nodeName)) {
 						server.getPacketRouter().route(msgCopy);
 					} else {

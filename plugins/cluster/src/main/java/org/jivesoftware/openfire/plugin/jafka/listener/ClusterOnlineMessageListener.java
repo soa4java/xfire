@@ -35,7 +35,7 @@ public class ClusterOnlineMessageListener implements OnlineMessageListener {
 						message.getElement().addAttribute("mc", "0");
 						JID to = message.getTo();
 						JID fullToJID = new JID(to.getNode(),to.getDomain(),userNode.getResource());
-						message.setTo(to);
+						message.setTo(fullToJID);
 						PacketQueue.getInstance().add(userNode.getNodeName(), message);
 					}
 				}

@@ -1,6 +1,5 @@
 package org.jivesoftware.of.common.enums;
 
-import org.jivesoftware.util.JiveGlobals;
 
 /**
  * Created by yanrc on 2015/6/23.

@@ -218,10 +218,6 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 									continue;
 								}
 
-								if (packet != null) {
-									packet.getElement().addAttribute("mc", "1");
-								}
-
 								if (message.startsWith("<message")) {
 									packet = new Message(ele);
 								} else if (message.startsWith("<presence")) {
