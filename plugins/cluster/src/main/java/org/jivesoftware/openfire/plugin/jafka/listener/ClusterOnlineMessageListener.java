@@ -11,6 +11,7 @@ import org.jivesoftware.of.common.node.UserNode;
 import org.jivesoftware.of.common.node.cache.UserNodeCache;
 import org.jivesoftware.of.common.node.cache.impl.redis.RedisUserNodeCacheImpl;
 import org.jivesoftware.of.common.thread.XExecutor;
+import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
 
 public class ClusterOnlineMessageListener implements OnlineMessageListener {
@@ -32,6 +33,9 @@ public class ClusterOnlineMessageListener implements OnlineMessageListener {
 					if (userNode != null && StringUtils.isNotBlank(userNode.getNodeName())
 							&& !ImNodes.nodeName.equalsIgnoreCase(userNode.getNodeName())) {
 						message.getElement().addAttribute("mc", "0");
+						JID to = message.getTo();
+						JID fullToJID = new JID(to.getNode(),to.getDomain(),userNode.getResource());
+						message.setTo(to);
 						PacketQueue.getInstance().add(userNode.getNodeName(), message);
 					}
 				}

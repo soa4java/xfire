@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -147,16 +148,19 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 							while (null != (packet = queue.poll())) {
 								if (packet instanceof Message) {
 									Message msg = (Message) packet;
-									if (msg.getElement().attribute("mc") != null) {
-										offlineMessageService.saveOfflineMsg(msg);
-										continue;
+									Attribute mcAttr = msg.getElement().attribute("mc") ;
+									if (mcAttr != null ) {
+										if("1".equalsIgnoreCase(mcAttr.getText())){
+											offlineMessageService.saveOfflineMsg(msg);
+											continue;
+										}
 									}
 									data.add(packet.toXML());
 								} else if (packet instanceof Presence) {
 									data.add(packet.toXML());
 								}
 
-								packet.getElement().addAttribute("mc", "0");
+								packet.getElement().addAttribute("mc", "1");
 
 								long end = System.currentTimeMillis();
 								long interval = end - begin;
