@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.yanrc.app.common.result.Result;
@@ -19,20 +18,16 @@ import net.yanrc.web.xweb.groupchat.query.GroupsGetQuery;
 import net.yanrc.web.xweb.groupchat.query.MembersGetQuery;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.error.ErrorCodeEnumOfGrobal;
 import org.jivesoftware.of.common.error.XmppErrorMessageUtils;
-import org.jivesoftware.of.common.message.PacketQueue;
 import org.jivesoftware.of.common.spring.SpringContextHolder;
 import org.jivesoftware.of.common.thread.XExecutor;
 import org.jivesoftware.of.common.utils.JidUtil;
 import org.jivesoftware.of.common.utils.SessionUtils;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
-import org.jivesoftware.openfire.plugin.xroster.groupchat.GroupChatRemoteApis;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.component.GroupChatComponent;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.enums.GroupCatEnum;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.enums.GroupTypeEnum;
@@ -40,7 +35,6 @@ import org.jivesoftware.openfire.plugin.xroster.groupchat.enums.MemberAffiliatio
 import org.jivesoftware.openfire.plugin.xroster.groupchat.enums.MemberRoleEnum;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.enums.ProtocolEnum;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.enums.UserAttrEnum;
-import org.jivesoftware.openfire.plugin.xroster.groupchat.helper.GroupChatCrossDomainHelper;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.helper.GroupMessages;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.slf4j.Logger;
