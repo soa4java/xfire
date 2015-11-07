@@ -55,6 +55,8 @@
 	    <constructor-arg name="presenceExecutorPrefix" value="${thread.pool.presenceExecutorPrefix}"/>
 	    <constructor-arg name="nThreadGroupChatExecutor" value="${thread.pool.nThreadGroupChatExecutor}"/>
 	    <constructor-arg name="groupChatExecutorPrefix" value="${thread.pool.groupChatExecutorPrefix}"/>
+	     <constructor-arg name="nMessageCenterExecutor" value="${thread.pool.nMessageCenterExecutor}"/>
+	    <constructor-arg name="messageCenterExecutorPrefix" value="${thread.pool.messageCenterExecutorPrefix"/>
     </bean>
 	
 	

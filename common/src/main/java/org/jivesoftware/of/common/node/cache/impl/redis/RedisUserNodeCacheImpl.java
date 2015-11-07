@@ -42,9 +42,9 @@ public class RedisUserNodeCacheImpl implements UserNodeCache {
 		Object obj = redisTemplate.boundHashOps(KEY).get(key);
 
 		if (obj != null) {
-			return JsonUtils.toBean(obj.toString(), JsonUtils.createCollectionType(List.class,UserNode.class));
+			return JsonUtils.toBean(obj.toString(), JsonUtils.createCollectionType(List.class, UserNode.class));
 		}
-		return new ArrayList<UserNode>(0); 
+		return new ArrayList<UserNode>(0);
 	}
 
 	@Override
@@ -56,17 +56,14 @@ public class RedisUserNodeCacheImpl implements UserNodeCache {
 			List<UserNode> target = new ArrayList<UserNode>();
 
 			for (UserNode node : list) {
-				if (node.getPid().equalsIgnoreCase(key) && !node.getResource().equalsIgnoreCase(value.getResource())) {
+				if (node.getPid().equalsIgnoreCase(key) && node.getResource().equalsIgnoreCase(value.getResource())) {
 					target.add(node);
 				}
 			}
 
-			if (CollectionUtils.isNotEmpty(target)) {
-				list.removeAll(target);
-				list.add(value);
-				redisTemplate.boundHashOps(KEY).put(key, JsonUtils.fromObject(list));
-			}
-
+			list.removeAll(target);
+			list.add(value);
+			redisTemplate.boundHashOps(KEY).put(key, JsonUtils.fromObject(list));
 		} else {
 			list = new ArrayList<UserNode>();
 			list.add(value);

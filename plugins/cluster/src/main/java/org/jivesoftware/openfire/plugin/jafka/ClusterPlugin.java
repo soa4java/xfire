@@ -18,8 +18,10 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.jivesoftware.ext.listener.OnlineMessageListener;
 import org.jivesoftware.of.common.message.PacketQueue;
 import org.jivesoftware.of.common.node.ImNode;
+import org.jivesoftware.of.common.node.ImNodes;
 import org.jivesoftware.of.common.node.cache.NodeCache;
 import org.jivesoftware.of.common.node.cache.impl.redis.RedisNodeCacheImpl;
 import org.jivesoftware.of.common.plugin.PluginAdaptor;
@@ -34,11 +36,13 @@ import org.jivesoftware.openfire.interceptor.InterceptorManager;
 import org.jivesoftware.openfire.interceptor.PacketInterceptor;
 import org.jivesoftware.openfire.plugin.jafka.interceptor.MessageTimestampPacketInterceptor;
 import org.jivesoftware.openfire.plugin.jafka.listener.ClusterOfflineMsgListener;
+import org.jivesoftware.openfire.plugin.jafka.listener.ClusterOnlineMessageListener;
 import org.jivesoftware.openfire.plugin.jafka.listener.presence.ClusterPresenceEventListener;
 import org.jivesoftware.openfire.plugin.jafka.service.ClusterOfflineMessageServiceImpl;
 import org.jivesoftware.openfire.plugin.jafka.service.OfflineMessageService;
 import org.jivesoftware.openfire.plugin.jafka.zk.ZkUtils;
 import org.jivesoftware.openfire.session.ClientSession;
+import org.jivesoftware.openfire.spi.RoutingTableImpl;
 import org.jivesoftware.openfire.user.PresenceEventDispatcher;
 import org.jivesoftware.openfire.user.PresenceEventListener;
 import org.jivesoftware.util.JiveGlobals;
@@ -66,17 +70,16 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 	private ClusterOfflineMsgListener offlineMsgListener = new ClusterOfflineMsgListener();
 	private PresenceEventListener presenceEventListener = new ClusterPresenceEventListener();
 	private PacketInterceptor messageInterceptor = new MessageTimestampPacketInterceptor();
+	private  OnlineMessageListener onlineMessageListener = new ClusterOnlineMessageListener();
 
 	public static String rootPath = "/imserver/nodes";
+	public static String nodeIp = ImNodes.nodeIp;
+	public static String nodeName = ImNodes.nodeName;
 
 	public static String zkConnect;
-	public static String nodeName;
-	public static String nodeIp;
 
 	static {
 		zkConnect = JiveGlobals.getXMLProperty("imserver.zk.connect");
-		nodeName = JiveGlobals.getXMLProperty("imserver.node.name");
-		nodeIp = JiveGlobals.getXMLProperty("imserver.node.ip");
 	}
 
 	private static String receiveTopic = nodeName + "_msgs";
@@ -152,7 +155,7 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 								} else if (packet instanceof Presence) {
 									data.add(packet.toXML());
 								}
-								
+
 								packet.getElement().addAttribute("mc", "0");
 
 								long end = System.currentTimeMillis();
@@ -211,11 +214,10 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 									continue;
 								}
 
-								
 								if (packet != null) {
 									packet.getElement().addAttribute("mc", "1");
 								}
-								
+
 								if (message.startsWith("<message")) {
 									packet = new Message(ele);
 								} else if (message.startsWith("<presence")) {
@@ -225,13 +227,13 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 									if (clientSession != null) {
 										clientSession.deliverRawText(packet.toXML());
 									}
-									
+
 									continue;
-									
+
 								} else {
 									logger.warn("unexpected package:{}", message);
 								}
-             
+
 								packetRouter.route(packet);
 
 								System.out.println("收到消息:" + count.incrementAndGet() + "  => " + message);
@@ -253,6 +255,7 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 		OfflineMessageStrategy.addListener(offlineMsgListener);
 		PresenceEventDispatcher.addListener(presenceEventListener);
 		InterceptorManager.getInstance().addInterceptor(messageInterceptor);
+		RoutingTableImpl.register(onlineMessageListener);
 
 		System.out.println(this.getClass().getSimpleName() + " init succeed!");
 	}
@@ -268,6 +271,7 @@ public class ClusterPlugin extends PluginAdaptor implements Plugin {
 		OfflineMessageStrategy.removeListener(offlineMsgListener);
 		PresenceEventDispatcher.removeListener(presenceEventListener);
 		InterceptorManager.getInstance().removeInterceptor(messageInterceptor);
+		RoutingTableImpl.unregister(onlineMessageListener);
 
 		System.out.println(this.getClass().getSimpleName() + " destroy succeed!");
 	}

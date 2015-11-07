@@ -23,6 +23,7 @@ package org.jivesoftware.openfire.spi;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.jivesoftware.ext.listener.OnlineMessageListener;
 import org.jivesoftware.openfire.*;
 import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.carbons.Received;
@@ -71,6 +72,8 @@ public class RoutingTableImpl extends BasicModule implements RoutingTable, Clust
     public static final String S2S_CACHE_NAME = "Routing Servers Cache";
     public static final String COMPONENT_CACHE_NAME = "Routing Components Cache";
     public static final String C2S_SESSION_NAME = "Routing User Sessions";
+    
+    private static List<OnlineMessageListener> onlineMessageListeners = new ArrayList<OnlineMessageListener>();
 
     /**
      * Cache (unlimited, never expire) that holds outgoing sessions to remote servers from this server.
@@ -270,6 +273,13 @@ public class RoutingTableImpl extends BasicModule implements RoutingTable, Clust
             else if (packet instanceof Presence) {
                 presenceRouter.routingFailed(jid, packet);
             }
+        }else{
+        	if (packet instanceof Message) {
+	        	for(OnlineMessageListener listener :onlineMessageListeners){
+	        		listener.onSucceed((Message)packet);
+	        	}
+        	}
+
         }
     }
 
@@ -1074,6 +1084,15 @@ public class RoutingTableImpl extends BasicModule implements RoutingTable, Clust
         for (LocalClientSession session : localRoutingTable.getClientRoutes()) {
             addClientRoute(session.getAddress(), session);
         }
+    }
+    
+    
+    public static boolean register(OnlineMessageListener onlineMessageListener){
+    	return onlineMessageListeners.add(onlineMessageListener);
+    }
+    
+    public static boolean unregister(OnlineMessageListener onlineMessageListener){
+    	return onlineMessageListeners.remove(onlineMessageListener);
     }
 
 }

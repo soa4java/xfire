@@ -8,10 +8,14 @@ import net.yanrc.app.common.util.UUIDGenerator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jivesoftware.of.common.constants.XConstants;
 import org.jivesoftware.of.common.domain.UserTicket;
 import org.jivesoftware.of.common.message.PacketQueue;
+import org.jivesoftware.of.common.node.ImNodes;
+import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.plugin.xroster.groupchat.GroupChatRemoteApis;
+import org.jivesoftware.util.JiveGlobals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
@@ -22,16 +26,18 @@ import org.xmpp.packet.Message;
  */
 public class GroupMessages {
 
-    static Logger LOG = LoggerFactory.getLogger(GroupMessages.class);
-       
-    public static  void broadcastMsgToMembers(final Set<String> memberPids, final Message msg, final String mySelfPid,boolean onlyOnline) {
+	static Logger LOG = LoggerFactory.getLogger(GroupMessages.class);
+	static XMPPServer server = XMPPServer.getInstance();
+
+	public static void broadcastMsgToMembers(final Set<String> memberPids, final Message msg, final String mySelfPid,
+			boolean onlyOnline) {
 		if (CollectionUtils.isNotEmpty(memberPids)) {
 
 			Map<String, List<UserTicket>> userTicketmap = null;
-			
-			if(onlyOnline){
+
+			if (onlyOnline) {
 				userTicketmap = GroupChatRemoteApis.getOnlineUserTicketMap(memberPids);
-			}else{
+			} else {
 				userTicketmap = GroupChatRemoteApis.getUserTicketMap(memberPids);
 			}
 
@@ -51,34 +57,38 @@ public class GroupMessages {
 				}
 
 				for (UserTicket userTicket : userTickets) {
-					Message msgCpoy = msg.createCopy();
-					msgCpoy.setTo(new JID(userTicket.getPid(), userTicket.getDm(), userTicket.getRs(), false));
-					PacketQueue.getInstance().add(userTicket.getNodeName(), msgCpoy);
-					if(!onlyOnline){
-						msgCpoy.getElement().addElement(XConstants.RESOURCE).setText(msgCpoy.getFrom().getResource());
-						msgCpoy.setID(generateMsgId());
+					Message msgCopy = msg.createCopy();
+					msgCopy.setTo(new JID(userTicket.getPid(), userTicket.getDm(), userTicket.getRs(), false));
+					if (!onlyOnline) {
+						msgCopy.getElement().addElement(XConstants.RESOURCE).setText(msgCopy.getFrom().getResource());
+						msgCopy.setID(generateMsgId());
 					}
+					if (StringUtils.equalsIgnoreCase(userTicket.getNodeName(), ImNodes.nodeName)) {
+						server.getPacketRouter().route(msgCopy);
+					} else {
+						PacketQueue.getInstance().add(userTicket.getNodeName(), msgCopy);
+					}
+
 				}
 			}
 		}
 	}
-    
-    public static  String generateMsgId() {
+
+	public static String generateMsgId() {
 		return UUIDGenerator.getUuid();
 	}
 
-    //TODO 组成员发生变化发送消息通知
-//    public Set<Object> getRevsubs(String groupId) {
-//        return redisTemplate.boundSetOps(String.format(RedisConstants.SET_PRE_TEMP_REVSUB_GRP, groupId)).members();
-//    }
-//
-//    public void convertAndSend(String channel, Object message) {
-//        redisTemplate.convertAndSend(channel, message);
-//    }
-//
-//    public Set<Object> getGroupTempRevSubs(String groupId){
-//        return redisTemplate.boundSetOps(String.format(RedisConstants.SET_PRE_TEMP_REVSUB_GRP, groupId)).members();
-//    }
-
+	//TODO 组成员发生变化发送消息通知
+	//    public Set<Object> getRevsubs(String groupId) {
+	//        return redisTemplate.boundSetOps(String.format(RedisConstants.SET_PRE_TEMP_REVSUB_GRP, groupId)).members();
+	//    }
+	//
+	//    public void convertAndSend(String channel, Object message) {
+	//        redisTemplate.convertAndSend(channel, message);
+	//    }
+	//
+	//    public Set<Object> getGroupTempRevSubs(String groupId){
+	//        return redisTemplate.boundSetOps(String.format(RedisConstants.SET_PRE_TEMP_REVSUB_GRP, groupId)).members();
+	//    }
 
 }
